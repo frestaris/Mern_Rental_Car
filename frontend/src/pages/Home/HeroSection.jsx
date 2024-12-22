@@ -42,13 +42,13 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-20 flex flex-col items-center justify-center px-4 text-white">
-        <h1 className="text-4xl md:text-6xl font-bold mb-4">Rent a Car</h1>
+        <h1 className="text-4xl md:text-6xl font-bold my-6">Rent a Car</h1>
         <p className="text-lg md:text-xl mb-6">
           Find the best car rental deals for your next trip.
         </p>
 
         {/* Date Picker Section */}
-        <div className="w-full bg-white text-black bg-opacity-60 p-6 shadow-lg rounded-t-2xl max-w-4xl border-b-[5px] border-b-amber-500">
+        <div className="w-full bg-white text-black bg-opacity-60 p-6 shadow-lg rounded-t-2xl max-w-5xl border-b-[5px] border-b-amber-500">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Pickup Location */}
             <div className="flex-1">
@@ -69,7 +69,7 @@ const HeroSection = () => {
                 <option value="Los Angeles">Los Angeles</option>
                 <option value="Chicago">Chicago</option>
               </select>
-              <div className="flex items-center mb-4">
+              <div className="flex items-center mb-2">
                 <input
                   type="checkbox"
                   id="same-dropoff"
