@@ -47,20 +47,6 @@ const OurFleet = () => {
         {/* Slide 1 */}
         <div className="flex flex-col md:flex-row items-center justify-center h-96 gap-4 px-8">
           <img
-            src="https://images.hertz.com/vehicles/Fleet_EV_AU.png"
-            alt="image 1"
-            className="h-84 w-84 object-contain"
-          />
-          <div className="text-center space-y-4">
-            <p className="font-semibold text-3xl">Electric Vehicles</p>
-            <p className="text-gray-700">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            </p>
-          </div>
-        </div>
-        {/* Slide 2 */}
-        <div className="flex flex-col md:flex-row items-center justify-center h-96 gap-4 px-8">
-          <img
             src="https://images.hertz.com/vehicles/Fleet_Car.png"
             alt="image 1"
             className="h-84 w-84 object-contain"
@@ -72,7 +58,7 @@ const OurFleet = () => {
             </p>
           </div>
         </div>
-        {/* Slide 3 */}
+        {/* Slide 2 */}
         <div className="flex flex-col md:flex-row items-center justify-center h-96 gap-4 px-8">
           <img
             src="https://images.hertz.com/vehicles/Fleet_4x4.png"
@@ -82,6 +68,20 @@ const OurFleet = () => {
           <div className="text-center space-y-4">
             <p className="font-semibold text-3xl">SUV's</p>
             <p className="text-gray-700 text-center">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </p>
+          </div>
+        </div>
+        {/* Slide 3 */}
+        <div className="flex flex-col md:flex-row items-center justify-center h-96 gap-4 px-8">
+          <img
+            src="https://images.hertz.com/vehicles/Fleet_EV_AU.png"
+            alt="image 1"
+            className="h-84 w-84 object-contain"
+          />
+          <div className="text-center space-y-4">
+            <p className="font-semibold text-3xl">Electric Vehicles</p>
+            <p className="text-gray-700">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             </p>
           </div>
