@@ -5,6 +5,7 @@ import Vehicles from "./pages/Vehicles";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import SignIn from "./components/SignIn";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/sign-in" element={<SignIn />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }
