@@ -5,14 +5,12 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow-md w-full z-10">
+    <nav className="bg-white shadow-md w-full z-50 sticky top-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <NavLink to="/" className="text-xl font-bold text-gray-800">
-              CarRental
-            </NavLink>
+            <h1 className="text-xl font-bold text-gray-800">CarRental</h1>
           </div>
 
           {/* Links */}
@@ -71,7 +69,7 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-white shadow-md">
-          <div className="space-y-1 px-4 pt-2 pb-3">
+          <div className="space-y-3 px-4 pt-2 pb-3">
             {["Home", "Vehicles", "About", "Contact", "Sign-In"].map((link) => (
               <NavLink
                 key={link}
