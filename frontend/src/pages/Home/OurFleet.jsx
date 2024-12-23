@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 const OurFleet = () => {
   return (
     <div className="text-center mt-5">
-      <h1 className="font-semibold text-4xl mb-5">View our fleet</h1>
-      <p className="text-2xl w-3/4 mx-auto pb-6">
+      <h1 className="font-semibold text-5xl mb-10">View our fleet</h1>
+      <p className="text-lg w-3/4 mx-auto text-gray-800 mb-10">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi nam,
         doloremque necessitatibus sit debitis aperiam. Natus veritatis incidunt
         blanditiis!
       </p>
-      <div className="w-[250px] border-b-8 rounded-full border-amber-500 mx-auto"></div>
+      <div className="w-[250px] border-b-8 rounded-full border-amber-600 mx-auto mb-10"></div>
       <Carousel
         className="rounded-xl mb-5"
         loop={true}
