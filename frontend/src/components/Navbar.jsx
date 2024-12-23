@@ -77,8 +77,8 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   `relative block text-gray-600 hover:text-gray-800 font-medium transition-colors ${
                     isActive
-                      ? "text-gray-800 after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-1/12 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300"
-                      : "after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-0 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300 hover:after:w-1/12 hover:after:left-0"
+                      ? "text-gray-800 after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-2/12 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300"
+                      : "after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-0 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300 hover:after:w-2/12 hover:after:left-0"
                   }`
                 }
                 onClick={() => setIsOpen(false)}
