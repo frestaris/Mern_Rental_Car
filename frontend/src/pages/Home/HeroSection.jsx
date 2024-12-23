@@ -32,7 +32,7 @@ const HeroSection = () => {
     <div className="relative bg-gray-900 h-screen">
       {/* Background Image */}
       <img
-        src="https://images.pexels.com/photos/14558135/pexels-photo-14558135.jpeg?auto=compress&cs=tinysrgb&w=300"
+        src="https://images.pexels.com/photos/24821/pexels-photo-24821.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
         alt="Background"
         className="absolute inset-0 object-cover w-full h-full z-0"
       />
@@ -62,7 +62,7 @@ const HeroSection = () => {
                 id="pickup-location"
                 value={pickupLocation}
                 onChange={(e) => setPickupLocation(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full p-[11px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
               >
                 <option value="">Select Pick-up Location</option>
                 <option value="New York">New York</option>
@@ -99,7 +99,7 @@ const HeroSection = () => {
                   id="dropoff-location"
                   value={dropoffLocation}
                   onChange={(e) => setDropoffLocation(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full p-[11px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
                 >
                   <option value="">Select Drop-off Location</option>
                   <option value="New York">New York</option>
@@ -142,7 +142,7 @@ const HeroSection = () => {
                 id="pickup-time"
                 value={pickupTime}
                 onChange={(e) => setPickupTime(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full p-[11px] rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
               >
                 <option value="">Select Time</option>
                 {timeOptions.map((time) => (
@@ -184,7 +184,7 @@ const HeroSection = () => {
                 id="dropoff-time"
                 value={dropoffTime}
                 onChange={(e) => setDropoffTime(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full p-[11px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
               >
                 <option value="">Select Time</option>
                 {timeOptions.map((time) => (

@@ -39,7 +39,7 @@ const Benefits = () => {
 
           {/* Benefits List */}
           <div className="space-y-6">
-            <div className="flex items-center justify-start space-x-4">
+            <div className="flex items-start space-x-4">
               <div className="bg-amber-500 text-white rounded-full p-4 w-14 h-14 flex items-center justify-center">
                 <FaCar className="text-2xl" />
               </div>
@@ -54,7 +54,7 @@ const Benefits = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-start space-x-4">
+            <div className="flex items-start space-x-4">
               <div className="bg-amber-500 text-white rounded-full p-4 w-14 h-14 flex items-center justify-center">
                 <FaCarCrash className="text-2xl" />
               </div>
@@ -69,7 +69,7 @@ const Benefits = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-start space-x-4">
+            <div className="flex items-start space-x-4">
               <div className="bg-amber-500 text-white rounded-full p-4 w-14 h-14 flex items-center justify-center">
                 <RiSteeringFill className="text-2xl" />
               </div>
