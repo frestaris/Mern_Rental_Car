@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import authRoutes from "./routes/auth.route.js";
 
 dotenv.config();
 
@@ -24,6 +25,9 @@ mongoose
   .connect(process.env.MONGO_DB)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
+
+// Routes
+app.use("/api/auth", authRoutes);
 
 const port = process.env.PORT || 3000;
 
