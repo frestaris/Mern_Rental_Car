@@ -1,8 +1,19 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../redux/slices/authSlice";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { isLoggedIn } = useSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  };
 
   return (
     <nav className="bg-white shadow-md w-full z-50 sticky top-0">
@@ -15,7 +26,7 @@ const Navbar = () => {
 
           {/* Links */}
           <div className="hidden md:flex space-x-8">
-            {["Home", "Vehicles", "About", "Contact", "Sign-In"].map((link) => (
+            {["Home", "Vehicles", "About", "Contact"].map((link) => (
               <NavLink
                 key={link}
                 to={link === "Home" ? "/" : `/${link.toLowerCase()}`}
@@ -30,6 +41,22 @@ const Navbar = () => {
                 {link}
               </NavLink>
             ))}
+
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="text-red-600 hover:text-red-800 font-medium"
+              >
+                Log Out
+              </button>
+            ) : (
+              <NavLink
+                to="/sign-in"
+                className="text-gray-600 hover:text-gray-800 font-medium"
+              >
+                Sign In
+              </NavLink>
+            )}
           </div>
 
           {/* Hamburger Menu */}
@@ -70,7 +97,7 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden bg-white shadow-md">
           <div className="space-y-3 px-4 pt-2 pb-3">
-            {["Home", "Vehicles", "About", "Contact", "Sign-In"].map((link) => (
+            {["Home", "Vehicles", "About", "Contact"].map((link) => (
               <NavLink
                 key={link}
                 to={link === "Home" ? "/" : `/${link.toLowerCase()}`}
@@ -86,6 +113,21 @@ const Navbar = () => {
                 {link}
               </NavLink>
             ))}
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="text-red-600 hover:text-red-800 font-medium"
+              >
+                Log Out
+              </button>
+            ) : (
+              <NavLink
+                to="/sign-in"
+                className="text-gray-600 hover:text-gray-800 font-medium"
+              >
+                Sign In
+              </NavLink>
+            )}
           </div>
         </div>
       )}
