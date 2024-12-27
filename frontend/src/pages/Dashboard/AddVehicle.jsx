@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addVehicle } from "../../redux/slices/vehicleSlice";
+import { toast } from "react-toastify";
 
 const AddVehicle = () => {
   const [formData, setFormData] = useState({
@@ -12,20 +13,69 @@ const AddVehicle = () => {
     fuelConsumption: "",
     image: "",
   });
+
+  const [isFuelConsumptionDisabled, setIsFuelConsumptionDisabled] =
+    useState(false);
+
   const dispatch = useDispatch();
   const { status, error } = useSelector((state) => state.vehicles);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+
+    if (name === "category") {
+      if (value === "Electric Cars") {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value,
+          fuelConsumption: "Electric",
+        }));
+        setIsFuelConsumptionDisabled(true);
+      } else {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value,
+          fuelConsumption: "",
+        }));
+        setIsFuelConsumptionDisabled(false);
+      }
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addVehicle(formData));
+
+    // Prepare the updated form data
+    const updatedFormData = {
+      ...formData,
+      fuelConsumption:
+        formData.category === "Electric Cars"
+          ? "Electric"
+          : formData.fuelConsumption + " l/100km",
+    };
+
+    // Dispatch the action
+    dispatch(addVehicle(updatedFormData));
+
+    if (status === "succeeded") {
+      toast.success("Vehicle added successfully!");
+      setFormData({
+        name: "",
+        category: "",
+        pricePerDay: "",
+        seats: "",
+        transmission: "",
+        fuelConsumption: "",
+        image: "",
+      });
+    } else if (status === "failed" && error) {
+      toast.error(`Error: ${error}`);
+    }
   };
 
   return (
@@ -139,7 +189,8 @@ const AddVehicle = () => {
             value={formData.fuelConsumption}
             onChange={handleChange}
             className="focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white w-full border border-gray-300 rounded-lg px-3 py-2"
-            required
+            disabled={isFuelConsumptionDisabled}
+            required={!isFuelConsumptionDisabled}
           />
         </div>
         <div>
@@ -163,14 +214,6 @@ const AddVehicle = () => {
           Add Vehicle
         </button>
       </form>
-      {status === "failed" && (
-        <p className="bg-red-100 text-red-500 text-2xl my-2 p-2">{error}</p>
-      )}
-      {status === "succeeded" && (
-        <p className="bg-green-100 text-green-500 text-2xl my-2 p-2">
-          Vehicle added successfully!
-        </p>
-      )}
     </div>
   );
 };

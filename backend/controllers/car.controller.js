@@ -51,4 +51,16 @@ export const addCar = async (req, res) => {
   }
 };
 
+// GET ALL VEHICLES
+export const getCars = async (req, res) => {
+  try {
+    const cars = await Car.find();
+
+    res.status(200).json(cars);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching cars" });
+  }
+};
+
 export default router;
