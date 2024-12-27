@@ -1,8 +1,23 @@
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import { signoutSuccess } from "../../redux/slices/authSlice";
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(signoutSuccess());
+  };
+
+  const links = [
+    { path: "/dashboard/manage-vehicles", label: "Manage Vehicles" },
+    { path: "/dashboard/bookings", label: "Bookings" },
+    { path: "/dashboard/add-vehicle", label: "Add New Vehicle" },
+    { path: "/dashboard/users", label: "Users" },
+  ];
 
   return (
     <div className="flex h-screen relative">
@@ -21,37 +36,27 @@ const DashboardLayout = () => {
 
         {/* Sidebar content */}
         <ul className="space-y-4">
+          {links.map((link) => (
+            <li key={link.path}>
+              <Link
+                to={link.path}
+                className={`relative text-gray-600 hover:text-gray-800 font-medium transition-colors ${
+                  location.pathname === link.path
+                    ? "text-gray-800 after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-full after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300"
+                    : "after:content-[''] after:absolute after:left-1/2 after:bottom-[-3px] after:w-0 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
+                }`}
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
           <li>
-            <Link
-              to="/dashboard/manage-vehicles"
-              className="hover:text-amber-600 cursor-pointer"
+            <button
+              onClick={handleLogout}
+              className="text-red-600 hover:text-red-800 font-medium"
             >
-              Manage Vehicles
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/dashboard/bookings"
-              className="hover:text-amber-600 cursor-pointer"
-            >
-              Bookings
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/dashboard/add-vehicle"
-              className="hover:text-amber-600 cursor-pointer"
-            >
-              Add New Vehicle
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/dashboard/users"
-              className="hover:text-amber-600 cursor-pointer"
-            >
-              Users
-            </Link>
+              Logout
+            </button>
           </li>
         </ul>
       </div>
