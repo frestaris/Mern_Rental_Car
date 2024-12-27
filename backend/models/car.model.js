@@ -30,13 +30,18 @@ const carSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    availability: {
+    isActive: {
       type: Boolean,
       default: true,
+    },
+    status: {
+      type: String,
+      default: "available",
     },
   },
   { timestamps: true }
 );
 
 const Car = mongoose.model("Car", carSchema);
+
 export default Car;
