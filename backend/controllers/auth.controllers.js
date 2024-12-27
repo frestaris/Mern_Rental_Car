@@ -1,83 +1,82 @@
 import bcrypt from "bcrypt";
-import { generateToken } from "../middleware/generateToken.js";
+import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
-// Sign up a new user
+// SIGN UP
 export const signup = async (req, res) => {
   const { username, email, password } = req.body;
 
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (password.length < 6) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 6 characters long" });
+  }
+
   try {
-    // Check if the user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }],
+    });
+
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-    if (password.length < 6) {
       return res
         .status(400)
-        .json({ message: "Password must be at least 6 characters long" });
+        .json({ message: "User with this email or username already exists" });
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
-    // Create a new user
-    const newUser = await User.create({
+    const newUser = new User({
       username,
       email,
       password: hashedPassword,
     });
 
-    // Generate a JWT token
-    const token = await generateToken(newUser._id);
-
-    res
-      .status(201)
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
-        sameSite: "None",
-      })
-      .json({ user: newUser, token });
+    await newUser.save();
+    res.json({ message: "Signup successful" });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
+    res.status(500).json({ message: "An error occurred during signup" });
   }
 };
 
-// Sign in an existing user
+// SIGN IN
 export const signin = async (req, res) => {
   const { email, password } = req.body;
-
+  if (!email || !password || email === "" || password === "") {
+    return res.status(400).json({ message: "All fields are required" });
+  }
   try {
-    // Check if the user exists
-    const existingUser = await User.findOne({ email });
-    if (!existingUser) {
-      return res.status(404).json({ message: "User not found" });
+    const validUser = await User.findOne({ email });
+    if (!validUser) {
+      return res.status(404).json({ message: "User not found!" });
     }
-
-    // Compare the password
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      existingUser.password
+    const validPassword = bcrypt.compareSync(password, validUser.password);
+    if (!validPassword) {
+      return res.status(400).json({ message: "Invalid password!" });
+    }
+    const token = jwt.sign(
+      {
+        id: validUser._id,
+        isAdmin: validUser.isAdmin,
+      },
+      process.env.JWT_SECRET_KEY
     );
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid password" });
-    }
-
-    // Generate a JWT token
-    const token = await generateToken(existingUser._id);
-
+    const { password: pass, ...rest } = validUser._doc;
     res
       .status(200)
-      .cookie("token", token, {
+      .cookie("access_token", token, {
         httpOnly: true,
         secure: true,
-        expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
         sameSite: "None",
       })
-      .json({ user: existingUser, token });
+      .json({
+        ...rest,
+        token: token,
+      });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
+    res.status(500).json({ message: "An error occurred during signin" });
   }
 };

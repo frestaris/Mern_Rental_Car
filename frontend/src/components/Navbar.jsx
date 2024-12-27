@@ -1,18 +1,15 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../redux/slices/authSlice";
+import { signoutSuccess } from "../redux/slices/authSlice";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { currentUser } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
+    dispatch(signoutSuccess());
   };
 
   return (
@@ -42,7 +39,39 @@ const Navbar = () => {
               </NavLink>
             ))}
 
-            {isLoggedIn ? (
+            {/* Conditional Links */}
+            {currentUser && currentUser?.isAdmin && (
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `relative text-gray-600 hover:text-gray-800 font-medium transition-colors ${
+                    isActive
+                      ? "text-gray-800 after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-full after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300"
+                      : "after:content-[''] after:absolute after:left-1/2 after:bottom-[-3px] after:w-0 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
+                  }`
+                }
+              >
+                Dashboard
+              </NavLink>
+            )}
+
+            {currentUser && !currentUser?.isAdmin && (
+              <NavLink
+                to="/bookings"
+                className={({ isActive }) =>
+                  `relative text-gray-600 hover:text-gray-800 font-medium transition-colors ${
+                    isActive
+                      ? "text-gray-800 after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-full after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300"
+                      : "after:content-[''] after:absolute after:left-1/2 after:bottom-[-3px] after:w-0 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
+                  }`
+                }
+              >
+                Bookings
+              </NavLink>
+            )}
+
+            {/* Sign In / Log Out */}
+            {currentUser ? (
               <button
                 onClick={handleLogout}
                 className="text-red-600 hover:text-red-800 font-medium"
@@ -113,21 +142,55 @@ const Navbar = () => {
                 {link}
               </NavLink>
             ))}
-            {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                className="text-red-600 hover:text-red-800 font-medium"
-              >
-                Log Out
-              </button>
-            ) : (
+            {currentUser && currentUser?.isAdmin && (
               <NavLink
-                to="/sign-in"
-                className="text-gray-600 hover:text-gray-800 font-medium"
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `relative block text-gray-600 hover:text-gray-800 font-medium transition-colors ${
+                    isActive
+                      ? "text-gray-800 after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-2/12 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300"
+                      : "after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-0 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300 hover:after:w-2/12 hover:after:left-0"
+                  }`
+                }
               >
-                Sign In
+                Dashboard
               </NavLink>
             )}
+
+            {currentUser && !currentUser?.isAdmin && (
+              <NavLink
+                to="/bookings"
+                className={({ isActive }) =>
+                  `relative block text-gray-600 hover:text-gray-800 font-medium transition-colors ${
+                    isActive
+                      ? "text-gray-800 after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-2/12 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300"
+                      : "after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-0 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300 hover:after:w-2/12 hover:after:left-0"
+                  }`
+                }
+              >
+                Bookings
+              </NavLink>
+            )}
+
+            {/* Sign In / Log Out Buttons */}
+            <div>
+              {currentUser ? (
+                <button
+                  onClick={handleLogout}
+                  className="text-red-600 hover:text-red-800 font-medium"
+                >
+                  Log Out
+                </button>
+              ) : (
+                <NavLink
+                  to="/sign-in"
+                  className="text-gray-600 hover:text-gray-800 font-medium"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Sign In
+                </NavLink>
+              )}
+            </div>
           </div>
         </div>
       )}

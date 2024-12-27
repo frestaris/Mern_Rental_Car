@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import User from "../models/user.model.js";
 
 dotenv.config();
 
@@ -9,21 +10,33 @@ if (!JWT_SECRET) {
   throw new Error("JWT_SECRET_KEY is not set in environment variables");
 }
 
-export const verifyToken = (req, res, next) => {
+export const verifyToken = async (req, res, next) => {
+  const authHeader = req?.headers?.authorization;
+  const token =
+    authHeader && authHeader.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : req?.cookies?.token;
+
   try {
-    const token = req.cookies.token;
     if (!token) {
-      return res.status(401).send({ message: "Invalid Token" });
+      return res
+        .status(401)
+        .json({ message: "No entry without authentication" });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
-    if (!decoded) {
-      return res.status(401).send({ message: "Invalid Token" });
+    const user = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const userFound = await User.findById(user.id).select("-password");
+
+    if (!userFound) {
+      return res.status(404).json({ message: "User not found" });
     }
-    req.user = decoded.userId;
+
+    req.user = userFound;
     next();
   } catch (error) {
-    console.log("Error while verifying token", error);
-    return res.status(401).send({ message: "Error while verifying Token" });
+    console.error("Error authenticating user", error);
+    return res
+      .status(500)
+      .json({ message: "Error authenticating user", error: error.message });
   }
 };

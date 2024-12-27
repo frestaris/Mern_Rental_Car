@@ -29,40 +29,55 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Slice
-const authSlice = createSlice({
-  name: "auth",
-  initialState: {
-    user: null,
-    isLoggedIn: false,
-    error: null,
-  },
+const initialState = {
+  currentUser: null,
+  error: null,
+  loading: false,
+};
+
+const userSlice = createSlice({
+  name: "user",
+  initialState,
   reducers: {
-    logout: (state) => {
-      state.user = null;
-      state.isLoggedIn = false;
+    signoutSuccess: (state) => {
+      state.currentUser = null;
+      state.loading = false;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.isLoggedIn = true;
+      // Login
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.rejected, (state, action) => {
-        state.error = action.payload;
-      })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.isLoggedIn = true;
+        state.currentUser = action.payload;
+        state.loading = false;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Registration
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.currentUser = null;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },
 });
 
-export const { logout } = authSlice.actions;
-export default authSlice.reducer;
+export const { signoutSuccess } = userSlice.actions;
+export default userSlice.reducer;

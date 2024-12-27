@@ -12,10 +12,19 @@ const SignUp = () => {
   const navigate = useNavigate();
   const { error } = useSelector((state) => state.auth);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(registerUser({ username, email, password }));
-    navigate("/sign-in");
+    const userData = { username, email, password };
+
+    if (!username || !email || !password) {
+      return;
+    }
+    try {
+      await dispatch(registerUser(userData)).unwrap();
+      navigate("/sign-in");
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
   };
 
   return (

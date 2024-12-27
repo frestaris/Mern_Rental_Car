@@ -7,6 +7,9 @@ import Contact from "./pages/Contact";
 import SignIn from "./components/SignIn";
 import Footer from "./components/Footer";
 import SignUp from "./components/SignUp";
+import Dashboard from "./components/Dashboard";
+import { PrivateRouteAdmin, PrivateRouteUser } from "./components/PrivateRoute";
+import Bookings from "./pages/Bookings";
 
 function App() {
   return (
@@ -19,6 +22,23 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRouteAdmin>
+              <Dashboard />
+            </PrivateRouteAdmin>
+          }
+        />
+
+        <Route
+          path="/bookings"
+          element={
+            <PrivateRouteUser>
+              <Bookings />
+            </PrivateRouteUser>
+          }
+        />
       </Routes>
       <Footer />
     </BrowserRouter>
