@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authReducer from "./slices/authSlice";
+import vehiclesReducer from "./slices/vehicleSlice";
 import bookingReducer from "./slices/bookingSlice";
 import { combineReducers } from "redux";
 
@@ -14,6 +15,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  vehicles: vehiclesReducer,
   booking: bookingReducer,
 });
 
