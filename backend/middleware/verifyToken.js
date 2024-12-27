@@ -28,7 +28,7 @@ export const verifyToken = async (req, res, next) => {
     const userFound = await User.findById(user.id).select("-password");
 
     if (!userFound) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not authorized" });
     }
 
     req.user = userFound;

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.route.js";
+import carRoutes from "./routes/car.route.js";
 
 dotenv.config();
 
@@ -28,6 +29,15 @@ mongoose
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/car", carRoutes);
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    error: "Internal Server Error",
+    message: err.message,
+  });
+});
 
 const port = process.env.PORT || 3000;
 
