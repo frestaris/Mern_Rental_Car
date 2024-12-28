@@ -111,7 +111,7 @@ const ManageVehicles = () => {
                   <img
                     src={vehicle.image}
                     alt={vehicle.name}
-                    className="inline-block relative object-center w-14 h-14 rounded-full border border-blue-gray-50 bg-blue-gray-50/50 object-cover"
+                    className="inline-block relative object-center w-10 h-10 rounded-full border border-blue-gray-50 bg-blue-gray-50/50 object-cover"
                   />
                   <p className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-bold">
                     {vehicle.name}{" "}

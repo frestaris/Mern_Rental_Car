@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.route.js";
 import carRoutes from "./routes/car.route.js";
+import bookingRoutes from "./routes/booking.route.js";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ mongoose
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/car", carRoutes);
+app.use("/api/booking", bookingRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

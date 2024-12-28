@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const bookingSchema = new mongoose.Schema(
   {
     user: {
@@ -8,6 +10,14 @@ const bookingSchema = new mongoose.Schema(
     car: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Car",
+      required: true,
+    },
+    pickupLocation: {
+      type: String,
+      required: true,
+    },
+    dropoffLocation: {
+      type: String,
       required: true,
     },
     startDate: {
