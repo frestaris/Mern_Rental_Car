@@ -1,19 +1,38 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getCars } from "../../redux/slices/vehicleSlice";
+import { getCars, deleteCar } from "../../redux/slices/vehicleSlice";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { FaSearch } from "react-icons/fa";
+import DeleteModal from "../../components/DeleteModal";
+import { toast } from "react-toastify";
 
 const ManageVehicles = () => {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleVehicles, setVisibleVehicles] = useState(10);
 
+  const [showModal, setShowModal] = useState(false);
+  const [vehicleToDelete, setVehicleToDelete] = useState(null);
+
   const { vehicles, status, error } = useSelector((state) => state.vehicles);
 
   const loadMoreVehicles = () => {
     setVisibleVehicles((prevCount) => prevCount + 5);
+  };
+
+  const handleDelete = (vehicleId) => {
+    setVehicleToDelete(vehicleId);
+    setShowModal(true);
+  };
+
+  const handleDeleteVehicle = () => {
+    if (vehicleToDelete) {
+      dispatch(deleteCar(vehicleToDelete));
+      setShowModal(false);
+      setVehicleToDelete(null);
+      toast.success("Vehicle deleted successfully!");
+    }
   };
 
   useEffect(() => {
@@ -141,6 +160,7 @@ const ManageVehicles = () => {
                   <button
                     className="relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-gray-900 hover:bg-gray-900/10 active:bg-gray-900/20"
                     type="button"
+                    onClick={() => handleDelete(vehicle._id)}
                   >
                     <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
                       <RiDeleteBinFill size={16} color="red" />
@@ -164,6 +184,12 @@ const ManageVehicles = () => {
           </button>
         </div>
       )}
+      {/* Delete Modal */}
+      <DeleteModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        handleDeleteVehicle={handleDeleteVehicle}
+      />
     </div>
   );
 };

@@ -42,6 +42,28 @@ export const getCars = createAsyncThunk(
   }
 );
 
+export const deleteCar = createAsyncThunk(
+  "vehicles/deleteCar",
+  async (carId, { getState, rejectWithValue }) => {
+    try {
+      const { currentUser } = getState().auth;
+      const token = currentUser?.token;
+
+      await axios.delete(`${baseURL}/api/car/delete-car/${carId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      return carId;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error || "Failed to delete car"
+      );
+    }
+  }
+);
 // Vehicles slice
 const vehiclesSlice = createSlice({
   name: "vehicles",
@@ -74,6 +96,20 @@ const vehiclesSlice = createSlice({
         state.vehicles = action.payload;
       })
       .addCase(getCars.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Handle deleting a car
+      .addCase(deleteCar.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deleteCar.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.vehicles = state.vehicles.filter(
+          (car) => car._id !== action.payload
+        );
+      })
+      .addCase(deleteCar.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

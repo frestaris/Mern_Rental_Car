@@ -6,8 +6,6 @@ const router = express.Router();
 // POST A CAR
 export const addCar = async (req, res) => {
   try {
-    console.log("Request Body:", req.body);
-
     if (
       !req.body.name ||
       !req.body.category ||
@@ -60,6 +58,34 @@ export const getCars = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching cars" });
+  }
+};
+
+// DELETE VEHICLE
+export const deleteCar = async (req, res) => {
+  try {
+    const id = req.params.carId;
+
+    if (!req.user.isAdmin) {
+      return res
+        .status(403)
+        .json({ error: "You are not allowed to delete cars" });
+    }
+
+    if (!id) {
+      return res.status(403).json({ error: "Car not found" });
+    }
+
+    const car = await Car.findByIdAndDelete(id);
+
+    if (!car) {
+      return res.status(404).json({ error: "Car not found" });
+    }
+
+    res.status(200).json({ message: "Car has been deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting car:", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
