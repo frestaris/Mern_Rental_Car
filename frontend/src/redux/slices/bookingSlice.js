@@ -19,15 +19,12 @@ export const fetchBookings = createAsyncThunk(
 
 export const createBooking = createAsyncThunk(
   "booking/createBooking",
-  async (bookingData, { getState, rejectWithValue }) => {
-    const { auth } = getState();
+  async (bookingData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("/api/bookings", bookingData, {
-        headers: { Authorization: `Bearer ${auth.user.token}` },
-      });
+      const response = await axios.post("/api/bookings", bookingData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response.data.message);
     }
   }
 );
@@ -37,11 +34,14 @@ const bookingSlice = createSlice({
   name: "booking",
   initialState: {
     bookings: [],
+    booking: null,
+    loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch Bookings
       .addCase(fetchBookings.fulfilled, (state, action) => {
         state.bookings = action.payload;
         state.error = null;
@@ -49,11 +49,18 @@ const bookingSlice = createSlice({
       .addCase(fetchBookings.rejected, (state, action) => {
         state.error = action.payload;
       })
+      // Create Booking
+      .addCase(createBooking.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(createBooking.fulfilled, (state, action) => {
-        state.bookings.push(action.payload);
+        state.loading = false;
+        state.booking = action.payload;
         state.error = null;
       })
       .addCase(createBooking.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },

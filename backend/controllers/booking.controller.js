@@ -80,3 +80,53 @@ export const createBooking = async (req, res) => {
     res.status(500).json({ message: "Server error.", error: error.message });
   }
 };
+
+export const getAvailableVehicles = async (req, res) => {
+  try {
+    const { pickupDate, dropoffDate } = req.query;
+
+    // Validate dates
+    const start = new Date(pickupDate);
+    const end = new Date(dropoffDate);
+    if (isNaN(start) || isNaN(end)) {
+      return res.status(400).json({ message: "Invalid date format." });
+    }
+    if (start >= end) {
+      return res
+        .status(400)
+        .json({ message: "Drop-off date must be after the pickup date." });
+    }
+
+    // Fetch all cars
+    const availableCars = await Car.find();
+
+    // Check car availability for the date range
+    const availableCarIds = [];
+    for (const car of availableCars) {
+      const existingBooking = await Booking.findOne({
+        car: car._id,
+        $or: [
+          { startDate: { $lt: end }, endDate: { $gt: start } }, // Check if there is an overlap with the selected dates
+        ],
+      });
+
+      // If no existing booking is found, the car is available
+      if (!existingBooking) {
+        availableCarIds.push(car._id);
+      }
+    }
+
+    // Return available cars
+    const cars = await Car.find({ _id: { $in: availableCarIds } });
+
+    if (cars.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No available cars for the selected dates." });
+    }
+
+    res.status(200).json(cars);
+  } catch (error) {
+    res.status(500).json({ message: "Server error.", error: error.message });
+  }
+};

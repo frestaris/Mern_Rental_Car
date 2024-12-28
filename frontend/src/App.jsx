@@ -18,6 +18,8 @@ import AddVehicle from "./pages/Dashboard/AddVehicle";
 import ManageUsers from "./pages/Dashboard/ManageUsers";
 import UpdateVehicle from "./pages/Dashboard/UpdateVehicle";
 import UpdateUser from "./pages/Dashboard/UpdateUser";
+import AvailableVehicles from "./pages/AvailableVehicles";
+import ReviewBooking from "./pages/ReviewBooking";
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/available-vehicles" element={<AvailableVehicles />} />
+        <Route path="/reviewBooking" element={<ReviewBooking />} />
 
         {/* ADMIN DASHBOARD ROUTE*/}
         <Route

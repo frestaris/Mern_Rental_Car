@@ -247,9 +247,6 @@ const Vehicles = () => {
                   </p>
                 </div>
               </div>
-              <button className="mt-4 bg-amber-500 text-white py-2 px-6 rounded-lg hover:bg-amber-600 transition-colors">
-                Rent Now
-              </button>
             </div>
           ))
         )}

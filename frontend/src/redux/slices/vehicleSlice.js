@@ -110,12 +110,33 @@ export const deleteCar = createAsyncThunk(
   }
 );
 
+// Get Available Vehicles
+export const getAvailableVehicles = createAsyncThunk(
+  "vehicles/getAvailableVehicles",
+  async ({ pickupDate, dropoffDate }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${baseURL}/api/booking/available-vehicles`,
+        {
+          params: { pickupDate, dropoffDate },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
+);
+
 // Vehicles slice
 const vehiclesSlice = createSlice({
   name: "vehicles",
   initialState: {
     vehicles: [],
     currentCar: null,
+    availableVehicles: [],
     status: null,
     error: null,
   },
@@ -184,6 +205,19 @@ const vehiclesSlice = createSlice({
         );
       })
       .addCase(deleteCar.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Fetch Available Vehicles
+      .addCase(getAvailableVehicles.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getAvailableVehicles.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.availableVehicles = action.payload;
+      })
+      .addCase(getAvailableVehicles.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

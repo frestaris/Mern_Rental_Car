@@ -1,6 +1,7 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
   const [pickupDate, setPickupDate] = useState(new Date());
@@ -10,6 +11,8 @@ const HeroSection = () => {
   const [pickupLocation, setPickupLocation] = useState("");
   const [dropoffLocation, setDropoffLocation] = useState("");
   const [isSameDropoff, setIsSameDropoff] = useState(true);
+
+  const navigate = useNavigate();
 
   const timeOptions = Array.from({ length: 48 }, (_, i) => {
     const hours = Math.floor(i / 2)
@@ -26,6 +29,30 @@ const HeroSection = () => {
     } else {
       setDropoffLocation("");
     }
+  };
+
+  const handleSearch = () => {
+    if (
+      !pickupLocation ||
+      !pickupDate ||
+      !pickupTime ||
+      !dropoffDate ||
+      !dropoffTime
+    ) {
+      alert("Please fill in all required fields!");
+      return;
+    }
+
+    navigate("/available-vehicles", {
+      state: {
+        pickupLocation,
+        dropoffLocation: isSameDropoff ? pickupLocation : dropoffLocation,
+        pickupDate,
+        pickupTime,
+        dropoffDate,
+        dropoffTime,
+      },
+    });
   };
 
   return (
@@ -201,11 +228,7 @@ const HeroSection = () => {
             <button
               className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-md font-medium w-full"
               type="button"
-              onClick={() =>
-                alert(
-                  `Pickup Location: ${pickupLocation}\nDropoff Location: ${dropoffLocation}\nPickup Date: ${pickupDate.toLocaleDateString()}\nPickup Time: ${pickupTime}\nDropoff Date: ${dropoffDate.toLocaleDateString()}\nDropoff Time: ${dropoffTime}`
-                )
-              }
+              onClick={handleSearch}
             >
               Search
             </button>
