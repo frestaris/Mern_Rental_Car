@@ -92,3 +92,30 @@ export const getUsers = async (req, res) => {
     res.status(500).json({ message: "Error fetching users" });
   }
 };
+
+// DELETE VEHICLE
+export const deleteUser = async (req, res) => {
+  try {
+    const id = req.params.userId;
+
+    if (!req.user.isAdmin) {
+      return res
+        .status(403)
+        .json({ error: "You are not allowed to delete this user" });
+    }
+    if (!id) {
+      return res.status(403).json({ error: "User not found" });
+    }
+
+    const user = await User.findByIdAndDelete(id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ message: "User has been deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

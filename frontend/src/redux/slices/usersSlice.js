@@ -2,12 +2,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseURL } from "../../utils/baseUrl";
 
-// Async thunk to get users from the backend
 export const getUsers = createAsyncThunk(
   "users/getUsers",
   async (userData, { getState, rejectWithValue }) => {
     try {
-      const { currentUser } = getState().auth; // Get currentUser from auth slice
+      const { currentUser } = getState().auth;
       const token = currentUser?.token;
 
       const response = await axios.get(`${baseURL}/api/auth/get-users`, {
@@ -18,7 +17,7 @@ export const getUsers = createAsyncThunk(
         withCredentials: true,
       });
 
-      return response.data; // Return the user data
+      return response.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.error || "Something went wrong"
@@ -27,27 +26,62 @@ export const getUsers = createAsyncThunk(
   }
 );
 
-// Create slice to manage user state
+export const deleteUser = createAsyncThunk(
+  "vehicles/deleteUser",
+  async (userId, { getState, rejectWithValue }) => {
+    try {
+      const { currentUser } = getState().auth;
+      const token = currentUser?.token;
+
+      await axios.delete(`${baseURL}/api/auth/delete-user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      return userId;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error || "Failed to delete user"
+      );
+    }
+  }
+);
+
 const usersSlice = createSlice({
   name: "users",
   initialState: {
-    users: [], // Default empty array for users
+    users: [],
     status: "idle",
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Handle get users
       .addCase(getUsers.pending, (state) => {
         state.status = "loading";
       })
       .addCase(getUsers.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.users = action.payload; // Store fetched users in the state
+        state.users = action.payload;
       })
       .addCase(getUsers.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload; // Store error message in the state
+        state.error = action.payload;
+      })
+      // Handle deleting a user
+      .addCase(deleteUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.users = state.users.filter((user) => user._id !== action.payload);
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });

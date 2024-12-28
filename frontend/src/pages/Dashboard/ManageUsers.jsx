@@ -1,16 +1,34 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getUsers } from "../../redux/slices/usersSlice";
+import { getUsers, deleteUser } from "../../redux/slices/usersSlice";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { FaSearch } from "react-icons/fa";
+import DeleteModal from "../../components/DeleteModal";
+import { toast } from "react-toastify";
 
 const ManageUsers = () => {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleUsers, setVisibleUsers] = useState(10);
+  const [showModal, setShowModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const { users, status, error } = useSelector((state) => state.users);
+
+  const handleDelete = (userId) => {
+    setUserToDelete(userId);
+    setShowModal(true);
+  };
+
+  const handleDeleteUser = () => {
+    if (userToDelete) {
+      dispatch(deleteUser(userToDelete));
+      setShowModal(false);
+      setUserToDelete(null);
+      toast.success("User deleted successfully!");
+    }
+  };
 
   const loadMoreUsers = () => {
     setVisibleUsers((prevCount) => prevCount + 5);
@@ -131,6 +149,7 @@ const ManageUsers = () => {
                   <button
                     className="relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-gray-900 hover:bg-gray-900/10 active:bg-gray-900/20"
                     type="button"
+                    onClick={() => handleDelete(user._id, user.name)}
                   >
                     <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
                       <RiDeleteBinFill size={16} color="red" />
@@ -154,6 +173,13 @@ const ManageUsers = () => {
           </button>
         </div>
       )}
+      {/* Delete Modal */}
+      <DeleteModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        handleDelete={handleDeleteUser}
+        deleteItemType="user"
+      />
     </div>
   );
 };
