@@ -42,7 +42,7 @@ function App() {
           <Route path="manage-vehicles" element={<ManageVehicles />} />
           <Route path="bookings" element={<ManageBookings />} />
           <Route path="add-vehicle" element={<AddVehicle />} />
-          <Route path="users" element={<ManageUsers />} />
+          <Route path="manage-users" element={<ManageUsers />} />
         </Route>
 
         {/* USER ROUTE*/}

@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authReducer from "./slices/authSlice";
 import vehiclesReducer from "./slices/vehicleSlice";
+import usersReducer from "./slices/usersSlice";
 import bookingReducer from "./slices/bookingSlice";
 import { combineReducers } from "redux";
 
@@ -15,6 +16,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  users: usersReducer,
   vehicles: vehiclesReducer,
   booking: bookingReducer,
 });

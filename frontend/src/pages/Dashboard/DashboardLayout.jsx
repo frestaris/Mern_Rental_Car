@@ -13,10 +13,10 @@ const DashboardLayout = () => {
   };
 
   const links = [
-    { path: "/dashboard/manage-vehicles", label: "Manage Vehicles" },
-    { path: "/dashboard/bookings", label: "Bookings" },
     { path: "/dashboard/add-vehicle", label: "Add New Vehicle" },
-    { path: "/dashboard/users", label: "Users" },
+    { path: "/dashboard/manage-vehicles", label: "Manage Vehicles" },
+    { path: "/dashboard/manage-users", label: "Manage Users" },
+    { path: "/dashboard/bookings", label: "Bookings" },
   ];
 
   return (

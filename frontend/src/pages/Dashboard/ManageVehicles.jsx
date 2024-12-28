@@ -8,12 +8,12 @@ import { FaSearch } from "react-icons/fa";
 const ManageVehicles = () => {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
-  const [visibleVehicles, setVisibleVehicles] = useState(8);
+  const [visibleVehicles, setVisibleVehicles] = useState(10);
 
   const { vehicles, status, error } = useSelector((state) => state.vehicles);
 
   const loadMoreVehicles = () => {
-    setVisibleVehicles((prevCount) => prevCount + 4);
+    setVisibleVehicles((prevCount) => prevCount + 5);
   };
 
   useEffect(() => {
