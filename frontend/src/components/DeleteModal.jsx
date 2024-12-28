@@ -1,6 +1,11 @@
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
-const DeleteModal = ({ showModal, setShowModal, handleDeleteVehicle }) => {
+const DeleteModal = ({
+  showModal,
+  setShowModal,
+  handleDelete,
+  deleteItemType,
+}) => {
   return (
     <>
       {showModal && (
@@ -35,11 +40,11 @@ const DeleteModal = ({ showModal, setShowModal, handleDeleteVehicle }) => {
                 style={{ fontSize: "5rem" }}
               />
               <h3 className="mb-5 text-2xl text-gray-600">
-                Are you sure you want to delete this vehicle?
+                Are you sure you want to delete this {deleteItemType}?
               </h3>
               <div className="flex justify-center gap-4">
                 <button
-                  onClick={handleDeleteVehicle}
+                  onClick={handleDelete}
                   className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                 >
                   Yes, I'm sure
