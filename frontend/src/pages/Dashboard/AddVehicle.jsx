@@ -79,7 +79,7 @@ const AddVehicle = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full p-8">
       <h1 className="text-2xl font-bold mb-4">Add New Vehicle</h1>
 
       <form onSubmit={handleSubmit}>

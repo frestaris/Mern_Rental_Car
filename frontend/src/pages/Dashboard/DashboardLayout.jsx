@@ -86,7 +86,7 @@ const DashboardLayout = () => {
 
       {/* Main Content */}
       <div
-        className={`flex-1 bg-gray-100 p-8 overflow-y-auto transition-all duration-300 ease-in-out ${
+        className={`flex-1 bg-gray-100  overflow-y-auto transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "ml-10/12" : "ml-5 md:ml-0"
         }`}
         style={{
