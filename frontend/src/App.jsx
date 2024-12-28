@@ -17,6 +17,7 @@ import ManageVehicles from "./pages/Dashboard/ManageVehicles";
 import AddVehicle from "./pages/Dashboard/AddVehicle";
 import ManageUsers from "./pages/Dashboard/ManageUsers";
 import UpdateVehicle from "./pages/Dashboard/UpdateVehicle";
+import UpdateUser from "./pages/Dashboard/UpdateUser";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           <Route path="add-vehicle" element={<AddVehicle />} />
           <Route path="manage-users" element={<ManageUsers />} />
           <Route path="update-vehicle/:id" element={<UpdateVehicle />} />
+          <Route path="update-user/:id" element={<UpdateUser />} />
         </Route>
 
         {/* USER ROUTE*/}

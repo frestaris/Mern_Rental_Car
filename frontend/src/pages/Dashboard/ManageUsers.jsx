@@ -6,6 +6,7 @@ import { RiDeleteBinFill } from "react-icons/ri";
 import { FaSearch } from "react-icons/fa";
 import DeleteModal from "../../components/DeleteModal";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const ManageUsers = () => {
   const dispatch = useDispatch();
@@ -76,17 +77,17 @@ const ManageUsers = () => {
           <tr>
             <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 py-4 pl-1">
               <p className="block antialiased font-sans text-sm text-blue-gray-900 font-normal leading-none opacity-70">
-                User ID
-              </p>
-            </th>
-            <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 py-4 pl-1">
-              <p className="block antialiased font-sans text-sm text-blue-gray-900 font-normal leading-none opacity-70">
                 Username
               </p>
             </th>
             <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 py-4 pl-1">
               <p className="block antialiased font-sans text-sm text-blue-gray-900 font-normal leading-none opacity-70">
                 Email
+              </p>
+            </th>
+            <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 py-4 pl-1">
+              <p className="block antialiased font-sans text-sm text-blue-gray-900 font-normal leading-none opacity-70">
+                Role
               </p>
             </th>
             <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 py-4 pl-1">
@@ -104,14 +105,6 @@ const ManageUsers = () => {
         <tbody>
           {filteredUsers.slice(0, visibleUsers).map((user) => (
             <tr key={user._id}>
-              {/* User ID */}
-              <td className="border-b border-blue-gray-50 pl-2">
-                <div className="flex items-center gap-3">
-                  <p className="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-normal">
-                    {user._id}
-                  </p>
-                </div>
-              </td>
               {/* User name */}
               <td className="border-b border-blue-gray-50 pl-2">
                 <div className="flex items-center gap-3">
@@ -126,24 +119,40 @@ const ManageUsers = () => {
                   {user.email}
                 </p>
               </td>
+              {/* User Role */}
+              <td className="border-b border-blue-gray-50">
+                <div className="w-max">
+                  <div
+                    className={`relative grid items-center font-sans font-bold uppercase whitespace-nowrap select-none ${
+                      user.isAdmin
+                        ? "bg-blue-500/20 text-blue-900"
+                        : "bg-green-500/20 text-green-900"
+                    } py-1 px-2 text-xs rounded-md`}
+                  >
+                    <span>{user.isAdmin ? "Admin" : "User"}</span>
+                    {/* Display User or Admin */}
+                  </div>
+                </div>
+              </td>
+
               {/* User Bookings */}
               <td className="border-b border-blue-gray-50">
                 <div className="w-max">
-                  <button>go user bookings</button>
+                  <button className="underline text-blue-500">link</button>
                 </div>
               </td>
               {/* User actions */}
               <td className="border-b border-blue-gray-50">
                 <div className="flex gap-2">
                   {/* Edit Button */}
-                  <button
+                  <Link
+                    to={`/dashboard/update-user/${user._id}`}
                     className="relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-blue-gray-900 hover:bg-gray-900/10 active:bg-gray-900/20"
-                    type="button"
                   >
                     <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
                       <MdEdit size={16} color="blue" />
                     </span>
-                  </button>
+                  </Link>
 
                   {/* Delete Button */}
                   <button
