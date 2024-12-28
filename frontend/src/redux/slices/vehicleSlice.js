@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseURL } from "../../utils/baseUrl";
 
+// Add Vehicle
 export const addVehicle = createAsyncThunk(
   "vehicles/addVehicle",
   async (vehicleData, { getState, rejectWithValue }) => {
@@ -28,6 +29,7 @@ export const addVehicle = createAsyncThunk(
   }
 );
 
+// Get Cars
 export const getCars = createAsyncThunk(
   "vehicles/getCars",
   async (_, { rejectWithValue }) => {
@@ -42,6 +44,49 @@ export const getCars = createAsyncThunk(
   }
 );
 
+// Get Car by ID
+export const getCarById = createAsyncThunk(
+  "vehicles/getCarById",
+  async (carId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${baseURL}/api/car/get-car/${carId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error || "Failed to fetch car"
+      );
+    }
+  }
+);
+
+// Update Vehicle
+export const updateVehicle = createAsyncThunk(
+  "vehicles/updateVehicle",
+  async ({ id, vehicleData }, { getState, rejectWithValue }) => {
+    try {
+      const { currentUser } = getState().auth;
+      const token = currentUser?.token;
+
+      const response = await axios.put(
+        `${baseURL}/api/car/update-car/${id}`,
+        vehicleData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.error || "Failed to update vehicle"
+      );
+    }
+  }
+);
+
+// Delete Vehicle
 export const deleteCar = createAsyncThunk(
   "vehicles/deleteCar",
   async (carId, { getState, rejectWithValue }) => {
@@ -64,11 +109,13 @@ export const deleteCar = createAsyncThunk(
     }
   }
 );
+
 // Vehicles slice
 const vehiclesSlice = createSlice({
   name: "vehicles",
   initialState: {
     vehicles: [],
+    currentCar: null,
     status: null,
     error: null,
   },
@@ -96,6 +143,33 @@ const vehiclesSlice = createSlice({
         state.vehicles = action.payload;
       })
       .addCase(getCars.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Handle getting car by ID
+      .addCase(getCarById.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getCarById.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.currentCar = action.payload;
+      })
+      .addCase(getCarById.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Handle updating a vehicle
+      .addCase(updateVehicle.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updateVehicle.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const updatedCar = action.payload;
+        state.vehicles = state.vehicles.map((car) =>
+          car._id === updatedCar._id ? updatedCar : car
+        );
+      })
+      .addCase(updateVehicle.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })

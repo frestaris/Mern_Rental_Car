@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getCars, deleteCar } from "../../redux/slices/vehicleSlice";
 import { MdEdit } from "react-icons/md";
@@ -147,14 +148,14 @@ const ManageVehicles = () => {
               <td className="border-b border-blue-gray-50">
                 <div className="flex gap-2">
                   {/* Edit Button */}
-                  <button
+                  <Link
+                    to={`/dashboard/update-vehicle/${vehicle._id}`}
                     className="relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-blue-gray-900 hover:bg-gray-900/10 active:bg-gray-900/20"
-                    type="button"
                   >
                     <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
                       <MdEdit size={16} color="blue" />
                     </span>
-                  </button>
+                  </Link>
 
                   {/* Delete Button */}
                   <button

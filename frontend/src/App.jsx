@@ -16,6 +16,7 @@ import ManageBookings from "./pages/Dashboard/ManageBookings";
 import ManageVehicles from "./pages/Dashboard/ManageVehicles";
 import AddVehicle from "./pages/Dashboard/AddVehicle";
 import ManageUsers from "./pages/Dashboard/ManageUsers";
+import UpdateVehicle from "./pages/Dashboard/UpdateVehicle";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
           <Route path="bookings" element={<ManageBookings />} />
           <Route path="add-vehicle" element={<AddVehicle />} />
           <Route path="manage-users" element={<ManageUsers />} />
+          <Route path="update-vehicle/:id" element={<UpdateVehicle />} />
         </Route>
 
         {/* USER ROUTE*/}

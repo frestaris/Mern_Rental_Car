@@ -61,6 +61,61 @@ export const getCars = async (req, res) => {
   }
 };
 
+// GET A VEHICLE BY ID
+export const getCarById = async (req, res) => {
+  try {
+    const car = await Car.findById({ _id: req.params.id });
+
+    if (!car) {
+      return res.status(404).json({ message: "Car not found" });
+    }
+    res.status(200).json(car);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching car" });
+  }
+};
+
+// UPDATE VEHICLE
+export const updateCar = async (req, res) => {
+  try {
+    const {
+      name,
+      category,
+      pricePerDay,
+      seats,
+      transmission,
+      fuelConsumption,
+      image,
+    } = req.body;
+
+    const updatedCar = await Car.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        category,
+        pricePerDay,
+        seats,
+        transmission,
+        fuelConsumption,
+        image,
+      },
+      { new: true }
+    );
+
+    if (!updatedCar) {
+      return res.status(404).json({ error: "Car not found" });
+    }
+    res.status(200).json(updatedCar);
+  } catch (error) {
+    console.error("Error updating car:", error.message);
+    res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
+    });
+  }
+};
+
 // DELETE VEHICLE
 export const deleteCar = async (req, res) => {
   try {
