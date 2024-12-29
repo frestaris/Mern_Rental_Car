@@ -1,95 +1,99 @@
 import Booking from "../models/booking.model.js";
 import Car from "../models/car.model.js";
 import User from "../models/user.model.js";
+import Stripe from "stripe";
+import moment from "moment";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // CREATE BOOKING
-export const createBooking = async (req, res) => {
-  try {
-    const {
-      userId,
-      carId,
-      pickupLocation,
-      dropoffLocation,
-      startDate,
-      endDate,
-    } = req.body;
+// export const createBooking = async (req, res) => {
+//   try {
+//     const {
+//       userId,
+//       carId,
+//       pickupLocation,
+//       dropoffLocation,
+//       startDate,
+//       endDate,
+//     } = req.body;
 
-    // Validate dates
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    if (isNaN(start) || isNaN(end)) {
-      return res.status(400).json({ message: "Invalid date format." });
-    }
-    if (start >= end) {
-      return res
-        .status(400)
-        .json({ message: "End date must be after start date." });
-    }
+//     // Validate dates
+//     const start = new Date(startDate);
+//     const end = new Date(endDate);
+//     if (isNaN(start) || isNaN(end)) {
+//       return res.status(400).json({ message: "Invalid date format." });
+//     }
+//     if (start >= end) {
+//       return res
+//         .status(400)
+//         .json({ message: "End date must be after start date." });
+//     }
 
-    // Check car availability
-    const existingBooking = await Booking.findOne({
-      car: carId,
-      $or: [{ startDate: { $lt: end }, endDate: { $gt: start } }],
-    });
+//     // Check car availability
+//     const existingBooking = await Booking.findOne({
+//       car: carId,
+//       $or: [{ startDate: { $lt: end }, endDate: { $gt: start } }],
+//     });
 
-    if (existingBooking) {
-      return res
-        .status(400)
-        .json({ message: "Car is unavailable for the selected dates." });
-    }
+//     if (existingBooking) {
+//       return res
+//         .status(400)
+//         .json({ message: "Car is unavailable for the selected dates." });
+//     }
 
-    // Fetch car details
-    const car = await Car.findById(carId);
-    if (!car) {
-      return res.status(404).json({ message: "Car not found." });
-    }
-    if (!car.pricePerDay) {
-      return res
-        .status(400)
-        .json({ message: "Car daily rate is not defined." });
-    }
+//     // Fetch car details
+//     const car = await Car.findById(carId);
+//     if (!car) {
+//       return res.status(404).json({ message: "Car not found." });
+//     }
+//     if (!car.pricePerDay) {
+//       return res
+//         .status(400)
+//         .json({ message: "Car daily rate is not defined." });
+//     }
 
-    // Calculate rental days and total cost
-    const rentalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-    if (rentalDays <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Booking duration must be at least one day." });
-    }
-    const totalCost = rentalDays * car.pricePerDay;
+//     // Calculate rental days and total cost
+//     const rentalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+//     if (rentalDays <= 0) {
+//       return res
+//         .status(400)
+//         .json({ message: "Booking duration must be at least one day." });
+//     }
+//     const totalCost = rentalDays * car.pricePerDay;
 
-    // Validate total cost
-    if (isNaN(totalCost) || totalCost <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Invalid total cost calculation." });
-    }
+//     // Validate total cost
+//     if (isNaN(totalCost) || totalCost <= 0) {
+//       return res
+//         .status(400)
+//         .json({ message: "Invalid total cost calculation." });
+//     }
 
-    // Create booking
-    const newBooking = await Booking.create({
-      user: userId,
-      car: carId,
-      pickupLocation,
-      dropoffLocation,
-      startDate: start,
-      endDate: end,
-      totalCost,
-      status: "pending",
-    });
+//     // Create booking
+//     const newBooking = await Booking.create({
+//       user: userId,
+//       car: carId,
+//       pickupLocation,
+//       dropoffLocation,
+//       startDate: start,
+//       endDate: end,
+//       totalCost,
+//       status: "pending",
+//     });
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found." });
-    }
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found." });
+//     }
 
-    user.bookings.push(newBooking._id);
-    await user.save();
+//     user.bookings.push(newBooking._id);
+//     await user.save();
 
-    res.status(201).json(newBooking);
-  } catch (error) {
-    res.status(500).json({ message: "Server error.", error: error.message });
-  }
-};
+//     res.status(201).json(newBooking);
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error.", error: error.message });
+//   }
+// };
 
 // GET AVAILABLE VEHICLES
 export const getAvailableVehicles = async (req, res) => {
@@ -166,5 +170,139 @@ export const getBookingById = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching booking" });
+  }
+};
+
+// CREATE STRIPE SESSION
+export const createSession = async (req, res) => {
+  const { bookingData } = req.body;
+  if (
+    !bookingData ||
+    !bookingData.totalDays ||
+    !bookingData.totalCost ||
+    !bookingData.carId ||
+    !bookingData.carId.name ||
+    !bookingData.carId.image
+  ) {
+    return res.status(400).json({ error: "Missing required booking data." });
+  }
+
+  try {
+    const carImage = bookingData.carId.image;
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `Car rental: ${bookingData.carId.name}`,
+              images: [carImage],
+              description: `Total Days: ${bookingData.totalDays}`,
+            },
+            unit_amount: bookingData.totalCost * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `http://localhost:5173/payment-cancel`,
+      metadata: {
+        userId: bookingData.userId,
+        carId: bookingData.carId._id,
+        pickupLocation: bookingData.pickupLocation,
+        dropoffLocation: bookingData.dropoffLocation,
+        startDate: bookingData.startDate,
+        endDate: bookingData.endDate,
+        totalCost: bookingData.totalCost,
+        totalDays: bookingData.totalDays,
+      },
+    });
+    res.json({ sessionId: session.id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Payment session creation failed.");
+  }
+};
+
+// ADD BOOKING FROM STRIPE
+export const paymentSuccessful = async (req, res) => {
+  const { session_id } = req.query;
+  if (!session_id) {
+    return res.status(400).json({ message: "Session ID is missing." });
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+
+    const {
+      carId,
+      userId,
+      pickupLocation,
+      dropoffLocation,
+      startDate,
+      endDate,
+    } = session.metadata;
+
+    if (!carId) {
+      return res
+        .status(400)
+        .json({ message: "Car ID is missing in session metadata." });
+    }
+
+    const existingBooking = await Booking.findOne({ session_id: session_id });
+    if (existingBooking) {
+      return res.status(200).json(existingBooking);
+    }
+
+    const car = await Car.findById(carId);
+    if (!car) {
+      return res.status(404).json({ message: "Car not found." });
+    }
+
+    if (!car.pricePerDay) {
+      return res
+        .status(400)
+        .json({ message: "Car daily rate is not defined." });
+    }
+
+    const daysDifference = moment(endDate).diff(moment(startDate), "days");
+    const totalCost = car.pricePerDay * daysDifference;
+
+    if (isNaN(totalCost) || totalCost <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Invalid total cost calculation." });
+    }
+
+    const newBooking = await Booking.create({
+      user: userId,
+      car: carId,
+      pickupLocation,
+      dropoffLocation,
+      startDate: moment(startDate).format("YYYY-MM-DD"),
+      endDate: moment(endDate).format("YYYY-MM-DD"),
+      totalCost,
+      status: "confirmed",
+      session_id: session_id,
+    });
+
+    await newBooking.save();
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    user.bookings.push(newBooking._id);
+
+    await user.save();
+
+    res.status(201).json(newBooking);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Server error.", error: error.message });
   }
 };

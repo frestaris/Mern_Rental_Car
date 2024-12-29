@@ -18,21 +18,6 @@ export const fetchBookings = createAsyncThunk(
   }
 );
 
-export const createBooking = createAsyncThunk(
-  "booking/createBooking",
-  async (bookingData, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(
-        `${baseURL}/api/booking/add-booking`,
-        bookingData
-      );
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response.data.message);
-    }
-  }
-);
-
 // Slice
 const bookingSlice = createSlice({
   name: "booking",
@@ -55,20 +40,6 @@ const bookingSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchBookings.rejected, (state, action) => {
-        state.error = action.payload;
-      })
-      // Create Booking
-      .addCase(createBooking.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(createBooking.fulfilled, (state, action) => {
-        state.loading = false;
-        state.booking = action.payload;
-        state.error = null;
-      })
-      .addCase(createBooking.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.payload;
       });
   },

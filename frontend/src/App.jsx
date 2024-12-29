@@ -20,6 +20,7 @@ import UpdateVehicle from "./pages/Dashboard/UpdateVehicle";
 import UpdateUser from "./pages/Dashboard/UpdateUser";
 import AvailableVehicles from "./pages/AvailableVehicles";
 import ReviewBooking from "./pages/ReviewBooking";
+import PaymentSuccess from "./components/PaymentSuccess";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/available-vehicles" element={<AvailableVehicles />} />
         <Route path="/reviewBooking" element={<ReviewBooking />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
 
         {/* ADMIN DASHBOARD ROUTE*/}
         <Route

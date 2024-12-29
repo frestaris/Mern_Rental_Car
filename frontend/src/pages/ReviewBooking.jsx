@@ -1,11 +1,14 @@
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { createBooking, resetError } from "../redux/slices/bookingSlice";
-import { useEffect } from "react";
+import { resetError } from "../redux/slices/bookingSlice";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { baseURL } from "../utils/baseUrl";
 
 const ReviewBooking = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const {
     pickupLocation,
@@ -27,7 +30,9 @@ const ReviewBooking = () => {
 
   const currentUser = useSelector((state) => state.auth.currentUser);
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
     if (
       !pickupLocation ||
       !dropoffLocation ||
@@ -39,16 +44,75 @@ const ReviewBooking = () => {
       return;
     }
 
+    if (!currentUser || !currentUser._id) {
+      alert("User is not logged in. Please log in to proceed.");
+      return;
+    }
+
+    if (isNaN(new Date(pickupDate)) || isNaN(new Date(dropoffDate))) {
+      alert("Invalid date format. Please select valid dates.");
+      return;
+    }
+
     const bookingData = {
       userId: currentUser._id,
-      carId: vehicle._id,
+      carId: {
+        _id: vehicle._id,
+        name: vehicle.name,
+        image: vehicle.image,
+        category: vehicle.category,
+        pricePerDay: vehicle.pricePerDay,
+      },
       pickupLocation,
       dropoffLocation,
       startDate: pickupDate,
       endDate: dropoffDate,
+      totalCost,
+      totalDays,
     };
-    console.log("booking added!");
-    dispatch(createBooking(bookingData));
+
+    try {
+      localStorage.setItem("bookingData", JSON.stringify(bookingData));
+    } catch (error) {
+      console.error("Error saving booking data to localStorage:", error);
+      alert("There was an issue saving your booking data. Please try again.");
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(
+        `${baseURL}/api/booking/payment/create-session`,
+        { bookingData }
+      );
+
+      if (!data || !data.sessionId) {
+        throw new Error("Missing sessionId in response from the backend.");
+      }
+
+      const stripe = window.Stripe(import.meta.env.VITE_STRIPE_PK);
+
+      const result = await stripe.redirectToCheckout({
+        sessionId: data.sessionId,
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+    } catch (error) {
+      console.error("Error during checkout:", error);
+
+      if (error.response) {
+        alert(
+          `Request failed: ${
+            error.response.data.message || error.response.statusText
+          }`
+        );
+      } else if (error.message) {
+        alert(`Error: ${error.message}`);
+      } else {
+        alert("There was an issue with the payment. Please try again.");
+      }
+    }
   };
 
   return (
