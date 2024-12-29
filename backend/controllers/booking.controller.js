@@ -1,6 +1,7 @@
 import Booking from "../models/booking.model.js";
 import Car from "../models/car.model.js";
 
+// CREATE BOOKING
 export const createBooking = async (req, res) => {
   try {
     const {
@@ -81,6 +82,7 @@ export const createBooking = async (req, res) => {
   }
 };
 
+// GET AVAILABLE VEHICLES
 export const getAvailableVehicles = async (req, res) => {
   try {
     const { pickupDate, dropoffDate } = req.query;
@@ -97,12 +99,12 @@ export const getAvailableVehicles = async (req, res) => {
         .json({ message: "Drop-off date must be after the pickup date." });
     }
 
-    // Fetch all cars
-    const availableCars = await Car.find();
+    // Fetch all bookings
+    const availableBookings = await Car.find();
 
     // Check car availability for the date range
     const availableCarIds = [];
-    for (const car of availableCars) {
+    for (const car of availableBookings) {
       const existingBooking = await Booking.findOne({
         car: car._id,
         $or: [
@@ -116,17 +118,44 @@ export const getAvailableVehicles = async (req, res) => {
       }
     }
 
-    // Return available cars
-    const cars = await Car.find({ _id: { $in: availableCarIds } });
+    // Return available bookings
+    const bookings = await Car.find({ _id: { $in: availableCarIds } });
 
-    if (cars.length === 0) {
+    if (bookings.length === 0) {
       return res
         .status(404)
-        .json({ message: "No available cars for the selected dates." });
+        .json({ message: "No available bookings for the selected dates." });
     }
 
-    res.status(200).json(cars);
+    res.status(200).json(bookings);
   } catch (error) {
     res.status(500).json({ message: "Server error.", error: error.message });
+  }
+};
+
+// GET ALL BOOKINGS
+export const getBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find();
+
+    res.status(200).json(bookings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching bookings" });
+  }
+};
+
+// GET A BOOKING BY ID
+export const getBookingById = async (req, res) => {
+  try {
+    const booking = await Booking.findById({ _id: req.params.id });
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    res.status(200).json(booking);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching booking" });
   }
 };
