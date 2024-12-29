@@ -5,6 +5,7 @@ import { getAvailableVehicles } from "../redux/slices/vehicleSlice";
 import { PiSeatbeltFill } from "react-icons/pi";
 import { GiGearStickPattern } from "react-icons/gi";
 import { IoIosSpeedometer } from "react-icons/io";
+import SearchAvailabilityBar from "../components/SearchAvailabilityBar";
 
 const AvailableVehicles = () => {
   const location = useLocation();
@@ -52,9 +53,17 @@ const AvailableVehicles = () => {
 
   return (
     <div>
-      <div className=" mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
+      <div>
+        <SearchAvailabilityBar
+          pickupLocation={pickupLocation}
+          dropoffLocation={dropoffLocation}
+          pickupDate={pickupDate}
+          pickupTime={pickupTime}
+          dropoffDate={dropoffDate}
+          dropoffTime={dropoffTime}
+        />{" "}
         <div>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b-4 border-amber-500">
+          <h2 className="text-2xl font-semibold text-gray-700 my-4 border-b-4 border-amber-500">
             Booking Details
           </h2>
           {/* Pickup and Dropoff Locations in the same row */}

@@ -100,7 +100,7 @@ const ReviewBooking = () => {
                 <img
                   src={vehicle.image}
                   alt={vehicle.name}
-                  className="w-40 h-40 rounded-full object-contain shadow-md md:mx-0"
+                  className="w-auto"
                 />
               </div>
 
@@ -136,7 +136,7 @@ const ReviewBooking = () => {
       {/* Action Button */}
       <div className="mt-8 text-center">
         <button className="bg-amber-500 text-white py-3 px-8 rounded-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400">
-          Confirm Booking
+          Proceed Checkout
         </button>
       </div>
     </div>
