@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { baseURL } from "../../utils/baseUrl";
 
 // Async actions
 export const fetchBookings = createAsyncThunk(
@@ -7,7 +8,7 @@ export const fetchBookings = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     const { auth } = getState();
     try {
-      const response = await axios.get("/api/bookings", {
+      const response = await axios.get(`${baseURL}/api/booking/get-bookings`, {
         headers: { Authorization: `Bearer ${auth.user.token}` },
       });
       return response.data;
@@ -21,7 +22,10 @@ export const createBooking = createAsyncThunk(
   "booking/createBooking",
   async (bookingData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("/api/bookings", bookingData);
+      const response = await axios.post(
+        `${baseURL}/api/booking/add-booking`,
+        bookingData
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
@@ -38,7 +42,11 @@ const bookingSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    resetError: (state) => {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Fetch Bookings
@@ -65,5 +73,7 @@ const bookingSlice = createSlice({
       });
   },
 });
+
+export const { resetError } = bookingSlice.actions;
 
 export default bookingSlice.reducer;

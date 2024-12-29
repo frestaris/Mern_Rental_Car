@@ -84,7 +84,7 @@ export const signin = async (req, res) => {
 // GET ALL USERS
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().populate("bookings");
 
     res.status(200).json(users);
   } catch (error) {
@@ -96,11 +96,12 @@ export const getUsers = async (req, res) => {
 // GET A USER BY ID
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findById({ _id: req.params.id });
+    const user = await User.findById(req.params.id).populate("bookings"); // Populate the bookings field
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
     res.status(200).json(user);
   } catch (error) {
     console.error(error);

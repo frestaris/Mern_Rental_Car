@@ -1,5 +1,6 @@
 import Booking from "../models/booking.model.js";
 import Car from "../models/car.model.js";
+import User from "../models/user.model.js";
 
 // CREATE BOOKING
 export const createBooking = async (req, res) => {
@@ -75,6 +76,14 @@ export const createBooking = async (req, res) => {
       totalCost,
       status: "pending",
     });
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    user.bookings.push(newBooking._id);
+    await user.save();
 
     res.status(201).json(newBooking);
   } catch (error) {

@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
-import { getUserById } from "../redux/slices/usersSlice";
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { createBooking, resetError } from "../redux/slices/bookingSlice";
+import { useEffect } from "react";
 
 const ReviewBooking = () => {
   const location = useLocation();
@@ -19,15 +19,37 @@ const ReviewBooking = () => {
     totalCost,
   } = location.state || {};
 
-  const userId = useSelector((state) => state.auth.currentUser?.id);
-
   useEffect(() => {
-    if (userId) {
-      dispatch(getUserById(userId));
-    }
-  }, [userId, dispatch]);
+    dispatch(resetError());
+  }, [dispatch]);
+
+  const { loading, error } = useSelector((state) => state.booking);
 
   const currentUser = useSelector((state) => state.auth.currentUser);
+
+  const handleCheckout = () => {
+    if (
+      !pickupLocation ||
+      !dropoffLocation ||
+      !pickupDate ||
+      !dropoffDate ||
+      !vehicle
+    ) {
+      alert("Please ensure all booking details are provided.");
+      return;
+    }
+
+    const bookingData = {
+      userId: currentUser._id,
+      carId: vehicle._id,
+      pickupLocation,
+      dropoffLocation,
+      startDate: pickupDate,
+      endDate: dropoffDate,
+    };
+    console.log("booking added!");
+    dispatch(createBooking(bookingData));
+  };
 
   return (
     <div className="p-8 bg-white rounded-lg shadow-xl ">
@@ -36,7 +58,6 @@ const ReviewBooking = () => {
       </h2>
 
       <div className="space-y-8">
-        {/* Booking and Vehicle Details in the same row on medium and above */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Booking Details */}
           <div>
@@ -44,7 +65,7 @@ const ReviewBooking = () => {
               Booking Details
             </h2>
 
-            {/* Pickup and Dropoff Locations in the same row */}
+            {/* Pickup and Dropoff Locations */}
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
                 <strong className="text-amber-600">Pickup Location:</strong>
@@ -56,7 +77,7 @@ const ReviewBooking = () => {
               </div>
             </div>
 
-            {/* Pickup Date and Pickup Time in the same row */}
+            {/* Pickup Date and Pickup Time */}
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
                 <strong className="text-amber-600">Pickup Date:</strong>
@@ -70,7 +91,7 @@ const ReviewBooking = () => {
               </div>
             </div>
 
-            {/* Dropoff Date and Dropoff Time in the same row */}
+            {/* Dropoff Date and Dropoff Time */}
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
                 <strong className="text-amber-600">Dropoff Date:</strong>
@@ -135,9 +156,14 @@ const ReviewBooking = () => {
 
       {/* Action Button */}
       <div className="mt-8 text-center">
-        <button className="bg-amber-500 text-white py-3 px-8 rounded-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400">
-          Proceed Checkout
+        <button
+          className="bg-amber-500 text-white py-3 px-8 rounded-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
+          onClick={handleCheckout}
+          disabled={loading}
+        >
+          {loading ? "Processing..." : "Proceed Checkout"}
         </button>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
       </div>
     </div>
   );
