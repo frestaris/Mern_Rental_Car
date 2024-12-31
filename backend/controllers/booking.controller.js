@@ -6,95 +6,6 @@ import moment from "moment";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// CREATE BOOKING
-// export const createBooking = async (req, res) => {
-//   try {
-//     const {
-//       userId,
-//       carId,
-//       pickupLocation,
-//       dropoffLocation,
-//       startDate,
-//       endDate,
-//     } = req.body;
-
-//     // Validate dates
-//     const start = new Date(startDate);
-//     const end = new Date(endDate);
-//     if (isNaN(start) || isNaN(end)) {
-//       return res.status(400).json({ message: "Invalid date format." });
-//     }
-//     if (start >= end) {
-//       return res
-//         .status(400)
-//         .json({ message: "End date must be after start date." });
-//     }
-
-//     // Check car availability
-//     const existingBooking = await Booking.findOne({
-//       car: carId,
-//       $or: [{ startDate: { $lt: end }, endDate: { $gt: start } }],
-//     });
-
-//     if (existingBooking) {
-//       return res
-//         .status(400)
-//         .json({ message: "Car is unavailable for the selected dates." });
-//     }
-
-//     // Fetch car details
-//     const car = await Car.findById(carId);
-//     if (!car) {
-//       return res.status(404).json({ message: "Car not found." });
-//     }
-//     if (!car.pricePerDay) {
-//       return res
-//         .status(400)
-//         .json({ message: "Car daily rate is not defined." });
-//     }
-
-//     // Calculate rental days and total cost
-//     const rentalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-//     if (rentalDays <= 0) {
-//       return res
-//         .status(400)
-//         .json({ message: "Booking duration must be at least one day." });
-//     }
-//     const totalCost = rentalDays * car.pricePerDay;
-
-//     // Validate total cost
-//     if (isNaN(totalCost) || totalCost <= 0) {
-//       return res
-//         .status(400)
-//         .json({ message: "Invalid total cost calculation." });
-//     }
-
-//     // Create booking
-//     const newBooking = await Booking.create({
-//       user: userId,
-//       car: carId,
-//       pickupLocation,
-//       dropoffLocation,
-//       startDate: start,
-//       endDate: end,
-//       totalCost,
-//       status: "pending",
-//     });
-
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found." });
-//     }
-
-//     user.bookings.push(newBooking._id);
-//     await user.save();
-
-//     res.status(201).json(newBooking);
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error.", error: error.message });
-//   }
-// };
-
 // GET AVAILABLE VEHICLES
 export const getAvailableVehicles = async (req, res) => {
   try {
@@ -126,7 +37,7 @@ export const getAvailableVehicles = async (req, res) => {
       });
 
       // If no existing booking is found, the car is available
-      if (!existingBooking) {
+      if (!existingBooking && car.status !== "booked") {
         availableCarIds.push(car._id);
       }
     }
@@ -170,6 +81,28 @@ export const getBookingById = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching booking" });
+  }
+};
+
+export const getBookingsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const bookings = await Booking.find({ user: userId });
+
+    // If no bookings found
+    if (!bookings || bookings.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No bookings found for this user." });
+    }
+
+    // Respond with bookings
+    res.status(200).json(bookings);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Server error. Could not fetch bookings." });
   }
 };
 
@@ -277,6 +210,7 @@ export const paymentSuccessful = async (req, res) => {
         .json({ message: "Invalid total cost calculation." });
     }
 
+    // Create new booking
     const newBooking = await Booking.create({
       user: userId,
       car: carId,
@@ -291,13 +225,16 @@ export const paymentSuccessful = async (req, res) => {
 
     await newBooking.save();
 
+    car.status = "booked";
+    await car.save();
+
+    // Add booking to the user
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
 
     user.bookings.push(newBooking._id);
-
     await user.save();
 
     res.status(201).json(newBooking);

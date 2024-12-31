@@ -2,28 +2,24 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseURL } from "../../utils/baseUrl";
 
-// Async actions
-export const fetchBookings = createAsyncThunk(
-  "booking/fetchBookings",
-  async (_, { getState, rejectWithValue }) => {
-    const { auth } = getState();
+export const fetchBookingsByUser = createAsyncThunk(
+  "bookings/fetchByUser",
+  async (userId, thunkAPI) => {
     try {
-      const response = await axios.get(`${baseURL}/api/booking/get-bookings`, {
-        headers: { Authorization: `Bearer ${auth.user.token}` },
-      });
+      const response = await axios.get(`${baseURL}/api/booking/user/${userId}`);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(
+        error.response.data || "Error fetching bookings"
+      );
     }
   }
 );
 
-// Slice
-const bookingSlice = createSlice({
-  name: "booking",
+const bookingsSlice = createSlice({
+  name: "bookings",
   initialState: {
     bookings: [],
-    booking: null,
     loading: false,
     error: null,
   },
@@ -34,17 +30,21 @@ const bookingSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Bookings
-      .addCase(fetchBookings.fulfilled, (state, action) => {
-        state.bookings = action.payload;
+      .addCase(fetchBookingsByUser.pending, (state) => {
+        state.loading = true;
         state.error = null;
       })
-      .addCase(fetchBookings.rejected, (state, action) => {
-        state.error = action.payload;
+      .addCase(fetchBookingsByUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.bookings = action.payload;
+      })
+      .addCase(fetchBookingsByUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch bookings";
       });
   },
 });
 
-export const { resetError } = bookingSlice.actions;
+export const { resetError } = bookingsSlice.actions;
 
-export default bookingSlice.reducer;
+export default bookingsSlice.reducer;

@@ -137,13 +137,22 @@ const ManageVehicles = () => {
                     className={`relative grid items-center font-sans font-bold uppercase whitespace-nowrap select-none ${
                       vehicle.status === "available"
                         ? "bg-green-500/20 text-green-900"
+                        : vehicle.status === "booked"
+                        ? "bg-yellow-500/20 text-yellow-900"
                         : "bg-red-500/20 text-red-900"
                     } py-1 px-2 text-xs rounded-md`}
                   >
-                    <span className="">{vehicle.status}</span>
+                    <span>
+                      {vehicle.status === "available"
+                        ? "Available"
+                        : vehicle.status === "booked"
+                        ? "Booked"
+                        : "Unavailable"}
+                    </span>
                   </div>
                 </div>
               </td>
+
               {/* vehicle Actions */}
               <td className="border-b border-blue-gray-50">
                 <div className="flex gap-2">
