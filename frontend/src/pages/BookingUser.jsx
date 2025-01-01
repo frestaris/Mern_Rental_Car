@@ -94,6 +94,8 @@ const BookingUser = () => {
           dropoffLocation,
           startDate,
           endDate,
+          pickupTime,
+          dropoffTime,
           car,
           totalCost,
         } = booking;
@@ -161,25 +163,13 @@ const BookingUser = () => {
                     <div className="grid grid-cols-2 gap-6 mb-6">
                       <div>
                         <strong className="text-amber-600">Pickup Time:</strong>
-                        <p className="text-gray-600">
-                          {startDate &&
-                            new Date(startDate).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                        </p>
+                        <p className="text-gray-600">{pickupTime}</p>
                       </div>
                       <div>
                         <strong className="text-amber-600">
                           Dropoff Time:
                         </strong>
-                        <p className="text-gray-600">
-                          {endDate &&
-                            new Date(endDate).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                        </p>
+                        <p className="text-gray-600">{dropoffTime}</p>
                       </div>
                     </div>
 

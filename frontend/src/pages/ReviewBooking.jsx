@@ -17,8 +17,8 @@ const ReviewBooking = () => {
     dropoffLocation,
     pickupDate,
     pickupTime,
-    dropoffDate,
     dropoffTime,
+    dropoffDate,
     vehicle,
     totalDays,
     totalCost,
@@ -39,6 +39,8 @@ const ReviewBooking = () => {
       !pickupLocation ||
       !dropoffLocation ||
       !pickupDate ||
+      !pickupTime ||
+      !dropoffTime ||
       !dropoffDate ||
       !vehicle
     ) {
@@ -69,6 +71,8 @@ const ReviewBooking = () => {
       dropoffLocation,
       startDate: pickupDate,
       endDate: dropoffDate,
+      pickupTime,
+      dropoffTime,
       totalCost,
       totalDays,
     };
@@ -124,6 +128,8 @@ const ReviewBooking = () => {
     if (
       !pickupLocation ||
       !dropoffLocation ||
+      !pickupTime ||
+      !dropoffTime ||
       !pickupDate ||
       !dropoffDate ||
       !vehicle
@@ -150,6 +156,8 @@ const ReviewBooking = () => {
       dropoffLocation,
       startDate: pickupDate,
       endDate: dropoffDate,
+      pickupTime,
+      dropoffTime,
       totalCost,
       totalDays,
     };

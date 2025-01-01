@@ -19,18 +19,14 @@ const PaymentSuccess = () => {
         setLoading(true);
         hasCreatedBooking.current = true;
         try {
+          // Make a single POST request with session_id
           const response = await axios.post(
             `${baseURL}/api/booking/payment-success?session_id=${sessionId}`
           );
 
+          // If the booking is successfully created, update state
           if (response.data) {
             setBooking(response.data);
-          } else {
-            const createResponse = await axios.post(
-              `${baseURL}/api/booking/payment-success`,
-              { session_id: sessionId }
-            );
-            setBooking(createResponse.data);
           }
         } catch (err) {
           console.error("Error creating booking:", err);
@@ -44,7 +40,7 @@ const PaymentSuccess = () => {
     createBooking();
 
     return () => {
-      setError(null);
+      setError(null); // Reset error on component unmount
     };
   }, [sessionId]);
 
