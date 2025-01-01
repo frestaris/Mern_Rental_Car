@@ -25,6 +25,8 @@ const AvailableVehicles = () => {
     (state) => state.vehicles
   );
 
+  const { currentUser } = useSelector((state) => state.auth);
+
   useEffect(() => {
     if (pickupLocation && pickupDate && dropoffDate) {
       dispatch(getAvailableVehicles({ pickupDate, dropoffDate }));
@@ -36,19 +38,24 @@ const AvailableVehicles = () => {
   const totalDays = Math.ceil((endDate - startDate) / (1000 * 3600 * 24));
 
   const handleBookNow = (vehicle) => {
-    navigate("/reviewBooking", {
-      state: {
-        pickupLocation,
-        dropoffLocation,
-        pickupDate,
-        pickupTime,
-        dropoffDate,
-        dropoffTime,
-        vehicle,
-        totalDays,
-        totalCost: vehicle.pricePerDay * totalDays,
-      },
-    });
+    if (!currentUser) {
+      alert("Please log in before proceeding with the booking.");
+      navigate("/sign-in");
+    } else {
+      navigate("/reviewBooking", {
+        state: {
+          pickupLocation,
+          dropoffLocation,
+          pickupDate,
+          pickupTime,
+          dropoffDate,
+          dropoffTime,
+          vehicle,
+          totalDays,
+          totalCost: vehicle.pricePerDay * totalDays,
+        },
+      });
+    }
   };
 
   return (
@@ -61,12 +68,11 @@ const AvailableVehicles = () => {
           pickupTime={pickupTime}
           dropoffDate={dropoffDate}
           dropoffTime={dropoffTime}
-        />{" "}
+        />
         <div>
           <h2 className="text-2xl font-semibold text-gray-700 my-4 border-b-4 border-amber-500">
             Booking Details
           </h2>
-          {/* Pickup and Dropoff Locations in the same row */}
           <div className="grid grid-cols-2 gap-6 mb-6">
             <div>
               <strong className="text-amber-600">Pickup Location:</strong>
@@ -78,7 +84,6 @@ const AvailableVehicles = () => {
               <p className="text-gray-600">{dropoffLocation}</p>
             </div>
           </div>
-          {/* Pickup Date and Pickup Time in the same row */}
           <div className="grid grid-cols-2 gap-6 mb-6">
             <div>
               <strong className="text-amber-600">Pickup Date:</strong>
@@ -92,7 +97,6 @@ const AvailableVehicles = () => {
               <p className="text-gray-600">{pickupTime}</p>
             </div>
           </div>
-          {/* Dropoff Date and Dropoff Time in the same row */}
           <div className="grid grid-cols-2 gap-6 mb-6">
             <div>
               <strong className="text-amber-600">Dropoff Date:</strong>
