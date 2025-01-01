@@ -1,6 +1,7 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { resetError } from "../redux/slices/bookingSlice";
+import { addBooking } from "../redux/slices/bookingSlice";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { baseURL } from "../utils/baseUrl";
@@ -8,6 +9,7 @@ import { baseURL } from "../utils/baseUrl";
 const ReviewBooking = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const {
@@ -30,7 +32,7 @@ const ReviewBooking = () => {
 
   const currentUser = useSelector((state) => state.auth.currentUser);
 
-  const handleCheckout = async () => {
+  const handleCheckoutWithStripe = async () => {
     if (isProcessing) return;
     setIsProcessing(true);
     if (
@@ -112,6 +114,53 @@ const ReviewBooking = () => {
       } else {
         alert("There was an issue with the payment. Please try again.");
       }
+    }
+  };
+
+  const handleCheckoutWithoutStripe = async () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    if (
+      !pickupLocation ||
+      !dropoffLocation ||
+      !pickupDate ||
+      !dropoffDate ||
+      !vehicle
+    ) {
+      alert("Please ensure all booking details are provided.");
+      return;
+    }
+
+    if (!currentUser || !currentUser._id) {
+      alert("User is not logged in. Please log in to proceed.");
+      return;
+    }
+
+    const bookingData = {
+      userId: currentUser._id,
+      carId: {
+        _id: vehicle._id,
+        name: vehicle.name,
+        image: vehicle.image,
+        category: vehicle.category,
+        pricePerDay: vehicle.pricePerDay,
+      },
+      pickupLocation,
+      dropoffLocation,
+      startDate: pickupDate,
+      endDate: dropoffDate,
+      totalCost,
+      totalDays,
+    };
+
+    try {
+      dispatch(addBooking(bookingData));
+      alert("Booking has been successfully created.");
+      navigate(`/user-booking`);
+    } catch (error) {
+      console.error("Error during booking:", error);
+      alert("There was an issue creating your booking. Please try again.");
     }
   };
 
@@ -219,15 +268,27 @@ const ReviewBooking = () => {
       </div>
 
       {/* Action Button */}
-      <div className="mt-8 text-center">
-        <button
-          className="bg-amber-500 text-white py-3 px-8 rounded-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
-          onClick={handleCheckout}
-          disabled={loading}
-        >
-          {loading ? "Processing..." : "Proceed Checkout"}
-        </button>
-        {error && <p className="text-red-500 mt-4">{error}</p>}
+      <div className="flex flex-col md:flex-row justify-center gap-5 mt-8">
+        <div className="m-0 md:mt-8 text-center">
+          <button
+            className="bg-amber-500 text-white py-3 px-8 rounded-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
+            onClick={handleCheckoutWithoutStripe}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Proceed Checkout without Stripe"}
+          </button>
+          {error && <p className="text-red-500 mt-4">{error}</p>}
+        </div>
+        <div className="m-0 md:mt-8 text-center">
+          <button
+            className="bg-amber-500 text-white py-3 px-8 rounded-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
+            onClick={handleCheckoutWithStripe}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Proceed Checkout with Stripe"}
+          </button>
+          {error && <p className="text-red-500 mt-4">{error}</p>}
+        </div>
       </div>
     </div>
   );

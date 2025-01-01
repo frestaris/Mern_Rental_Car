@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  addBookingWithoutStripe,
   createSession,
   deleteBooking,
   getAvailableVehicles,
@@ -13,6 +14,7 @@ import { verifyToken } from "../middleware/verifyToken.js";
 const router = express.Router();
 
 router.get("/available-vehicles", getAvailableVehicles);
+router.post("/add-booking", verifyToken, addBookingWithoutStripe);
 router.get("/get-bookings", getBookings);
 router.get("/get-booking/:id", verifyToken, getBookingById);
 router.delete("/delete/:id", verifyToken, deleteBooking);

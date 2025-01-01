@@ -66,7 +66,7 @@ const Navbar = () => {
                   }`
                 }
               >
-                Your Booking
+                Your Bookings
               </NavLink>
             )}
 
