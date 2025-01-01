@@ -47,7 +47,11 @@ const BookingPage = () => {
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="flex items-center justify-center my-6 text-3xl font-bold">
+        {error}
+      </div>
+    );
   }
 
   if (!booking) {
@@ -78,9 +82,10 @@ const BookingPage = () => {
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">
               Booking Details
             </h2>
-
+            <strong className="text-amber-600">Booking ID:</strong>
+            <p className="text-gray-600">{id}</p>
             {/* Pickup and Dropoff Locations */}
-            <div className="grid grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-2 gap-6 mb-6 mt-6">
               <div>
                 <strong className="text-amber-600">Pickup Location:</strong>
                 <p className="text-gray-600">{pickupLocation}</p>

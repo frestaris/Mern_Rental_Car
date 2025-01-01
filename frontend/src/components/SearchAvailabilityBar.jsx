@@ -18,58 +18,90 @@ const SearchAvailabilityBar = ({
     dropoffLocation || ""
   );
   const [pickupDateState, setPickupDate] = useState(pickupDate || new Date());
-  const [pickupTimeState, setPickupTime] = useState(pickupTime || "00:00");
+  const [pickupTimeState, setPickupTime] = useState(pickupTime || "");
   const [dropoffDateState, setDropoffDate] = useState(
     dropoffDate || new Date()
   );
-  const [dropoffTimeState, setDropoffTime] = useState(dropoffTime || "00:00");
+  const [dropoffTimeState, setDropoffTime] = useState(dropoffTime || "");
   const [isSameDropoff, setIsSameDropoff] = useState(
     dropoffLocation === pickupLocation
   );
-
+  const [errors, setErrors] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const navigate = useNavigate();
 
-  const timeOptions = Array.from({ length: 48 }, (_, i) => {
-    const hours = Math.floor(i / 2)
-      .toString()
-      .padStart(2, "0");
-    const minutes = i % 2 === 0 ? "00" : "30";
-    return `${hours}:${minutes}`;
-  });
+  const workingHours = (start = 8, end = 20) => {
+    const options = [];
+    for (let hour = start; hour <= end; hour++) {
+      options.push(`${hour.toString().padStart(2, "0")}:00`);
+      options.push(`${hour.toString().padStart(2, "0")}:30`);
+    }
+    return options;
+  };
+
+  const timeOptions = workingHours();
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!pickupLocation)
+      newErrors.pickupLocation = "Pick-up location is required.";
+    if (!pickupTime) newErrors.pickupTime = "Pick-up time is required.";
+    if (!dropoffTime) newErrors.dropoffTime = "Drop-off time is required.";
+    if (!dropoffDate) newErrors.dropoffDate = "Drop-off date is required.";
+    if (!isSameDropoff && !dropoffLocation)
+      newErrors.dropoffLocation = "Drop-off location is required.";
+
+    const pickupDateWithoutTime = new Date(pickupDateState);
+    pickupDateWithoutTime.setHours(0, 0, 0, 0);
+
+    const dropoffDateWithoutTime = new Date(dropoffDateState);
+    dropoffDateWithoutTime.setHours(0, 0, 0, 0);
+
+    const oneDay = 24 * 60 * 60 * 1000;
+    if (dropoffDateWithoutTime - pickupDateWithoutTime < oneDay) {
+      newErrors.dropoffDate =
+        "Minimum rental duration is 1 day. Please select a later drop-off date.";
+    }
+
+    // Check if pick-up and drop-off dates are the same
+    if (
+      pickupDateState.toDateString() === dropoffDateState.toDateString() &&
+      pickupTimeState >= dropoffTimeState
+    ) {
+      newErrors.dropoffTime =
+        "Drop-off time must be later than the pick-up time on the same day.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleCheckboxChange = () => {
     setIsSameDropoff(!isSameDropoff);
     if (isSameDropoff) {
-      setDropoffLocation(pickupLocationState); // Use state for pickupLocation
+      setDropoffLocation(pickupLocationState);
     } else {
       setDropoffLocation("");
     }
   };
 
   const handleSearch = () => {
-    if (
-      !pickupLocationState ||
-      !pickupDateState ||
-      !pickupTimeState ||
-      !dropoffDateState ||
-      !dropoffTimeState
-    ) {
-      alert("Please fill in all required fields!");
-      return;
+    setIsSubmitted(true);
+    if (validateForm()) {
+      navigate("/available-vehicles", {
+        state: {
+          pickupLocation: pickupLocationState,
+          dropoffLocation: isSameDropoff
+            ? pickupLocationState
+            : dropoffLocationState,
+          pickupDate: pickupDateState,
+          pickupTime: pickupTimeState,
+          dropoffDate: dropoffDateState,
+          dropoffTime: dropoffTimeState,
+        },
+      });
     }
-
-    navigate("/available-vehicles", {
-      state: {
-        pickupLocation: pickupLocationState,
-        dropoffLocation: isSameDropoff
-          ? pickupLocationState
-          : dropoffLocationState,
-        pickupDate: pickupDateState,
-        pickupTime: pickupTimeState,
-        dropoffDate: dropoffDateState,
-        dropoffTime: dropoffTimeState,
-      },
-    });
   };
 
   return (
@@ -87,15 +119,23 @@ const SearchAvailabilityBar = ({
             </label>
             <select
               id="pickup-location"
-              value={pickupLocationState} // Bind state value
-              onChange={(e) => setPickupLocation(e.target.value)} // Update state on change
+              value={pickupLocationState}
+              onChange={(e) => setPickupLocation(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 text-gray-700"
             >
               <option value="">Select Pick-up Location</option>
-              <option value="New York">New York</option>
-              <option value="Los Angeles">Los Angeles</option>
-              <option value="Chicago">Chicago</option>
+              <option value="Brisbane">Brisbane</option>
+              <option value="Sydney">Sydney</option>
+              <option value="Melbourne">Melbourne</option>
+              <option value="Cairns">Cairns</option>
+              <option value="Perth">Perth</option>
+              <option value="Adelaide">Adelaide</option>
             </select>
+            {isSubmitted && errors.pickupLocation && (
+              <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                {errors.pickupLocation}
+              </p>
+            )}
             <div className="flex items-center mt-1">
               <input
                 type="checkbox"
@@ -124,15 +164,23 @@ const SearchAvailabilityBar = ({
               </label>
               <select
                 id="dropoff-location"
-                value={dropoffLocationState} // Bind state value
-                onChange={(e) => setDropoffLocation(e.target.value)} // Update state on change
+                value={dropoffLocationState}
+                onChange={(e) => setDropoffLocation(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 text-gray-700"
               >
                 <option value="">Select Drop-off Location</option>
-                <option value="New York">New York</option>
-                <option value="Los Angeles">Los Angeles</option>
-                <option value="Chicago">Chicago</option>
+                <option value="Brisbane">Brisbane</option>
+                <option value="Sydney">Sydney</option>
+                <option value="Melbourne">Melbourne</option>
+                <option value="Cairns">Cairns</option>
+                <option value="Perth">Perth</option>
+                <option value="Adelaide">Adelaide</option>
               </select>
+              {isSubmitted && errors.dropoffLocation && (
+                <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                  {errors.dropoffLocation}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -149,12 +197,18 @@ const SearchAvailabilityBar = ({
             <DatePicker
               id="pickup-date"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 text-gray-700"
-              selected={pickupDateState} // Bind state value
-              onChange={setPickupDate} // Update state on change
+              selected={pickupDateState}
+              onChange={setPickupDate}
               clearIcon={null}
               dateFormat="dd-MM-yyyy"
+              minDate={new Date()}
               disableClock
             />
+            {isSubmitted && errors.pickupDate && (
+              <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                {errors.pickupDate}
+              </p>
+            )}
           </div>
 
           {/* Pickup Time */}
@@ -167,8 +221,8 @@ const SearchAvailabilityBar = ({
             </label>
             <select
               id="pickup-time"
-              value={pickupTimeState} // Bind state value
-              onChange={(e) => setPickupTime(e.target.value)} // Update state on change
+              value={pickupTimeState}
+              onChange={(e) => setPickupTime(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 text-gray-700"
             >
               <option value="">Select Time</option>
@@ -178,6 +232,11 @@ const SearchAvailabilityBar = ({
                 </option>
               ))}
             </select>
+            {isSubmitted && errors.pickupTime && (
+              <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                {errors.pickupTime}
+              </p>
+            )}
           </div>
 
           {/* Drop-off Date */}
@@ -191,12 +250,18 @@ const SearchAvailabilityBar = ({
             <DatePicker
               id="dropoff-date"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 text-gray-700"
-              selected={dropoffDateState} // Bind state value
-              onChange={setDropoffDate} // Update state on change
+              selected={dropoffDateState}
+              onChange={setDropoffDate}
               clearIcon={null}
               dateFormat="dd-MM-yyyy"
+              minDate={new Date()}
               disableClock
             />
+            {isSubmitted && errors.dropoffDate && (
+              <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                {errors.dropoffDate}
+              </p>
+            )}
           </div>
 
           {/* Drop-off Time */}
@@ -209,8 +274,8 @@ const SearchAvailabilityBar = ({
             </label>
             <select
               id="dropoff-time"
-              value={dropoffTimeState} // Bind state value
-              onChange={(e) => setDropoffTime(e.target.value)} // Update state on change
+              value={dropoffTimeState}
+              onChange={(e) => setDropoffTime(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 text-gray-700"
             >
               <option value="">Select Time</option>
@@ -220,6 +285,11 @@ const SearchAvailabilityBar = ({
                 </option>
               ))}
             </select>
+            {isSubmitted && errors.dropoffTime && (
+              <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                {errors.dropoffTime}
+              </p>
+            )}
           </div>
         </div>
 
@@ -230,7 +300,7 @@ const SearchAvailabilityBar = ({
             type="button"
             onClick={handleSearch}
           >
-            Search
+            Update Search
           </button>
         </div>
       </div>

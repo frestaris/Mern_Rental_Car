@@ -5,22 +5,62 @@ import { useNavigate } from "react-router-dom";
 
 const SearchAvailability = () => {
   const [pickupDate, setPickupDate] = useState(new Date());
-  const [pickupTime, setPickupTime] = useState("00:00");
+  const [pickupTime, setPickupTime] = useState("08:00");
   const [dropoffDate, setDropoffDate] = useState(new Date());
-  const [dropoffTime, setDropoffTime] = useState("00:00");
+  const [dropoffTime, setDropoffTime] = useState("08:00");
   const [pickupLocation, setPickupLocation] = useState("");
   const [dropoffLocation, setDropoffLocation] = useState("");
   const [isSameDropoff, setIsSameDropoff] = useState(true);
+  const [errors, setErrors] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const navigate = useNavigate();
 
-  const timeOptions = Array.from({ length: 48 }, (_, i) => {
-    const hours = Math.floor(i / 2)
-      .toString()
-      .padStart(2, "0");
-    const minutes = i % 2 === 0 ? "00" : "30";
-    return `${hours}:${minutes}`;
-  });
+  const workingHours = (start = 8, end = 20) => {
+    const options = [];
+    for (let hour = start; hour <= end; hour++) {
+      options.push(`${hour.toString().padStart(2, "0")}:00`);
+      options.push(`${hour.toString().padStart(2, "0")}:30`);
+    }
+    return options;
+  };
+
+  const timeOptions = workingHours();
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!pickupLocation)
+      newErrors.pickupLocation = "Pick-up location is required.";
+    if (!pickupTime) newErrors.pickupTime = "Pick-up time is required.";
+    if (!dropoffTime) newErrors.dropoffTime = "Drop-off time is required.";
+    if (!dropoffDate) newErrors.dropoffDate = "Drop-off date is required.";
+    if (!isSameDropoff && !dropoffLocation)
+      newErrors.dropoffLocation = "Drop-off location is required.";
+
+    const pickupDateWithoutTime = new Date(pickupDate);
+    pickupDateWithoutTime.setHours(0, 0, 0, 0);
+
+    const dropoffDateWithoutTime = new Date(dropoffDate);
+    dropoffDateWithoutTime.setHours(0, 0, 0, 0);
+
+    const oneDay = 24 * 60 * 60 * 1000;
+    if (dropoffDateWithoutTime - pickupDateWithoutTime < oneDay) {
+      newErrors.dropoffDate =
+        "Minimum rental duration is 1 day. Please select a later drop-off date.";
+    }
+
+    if (
+      pickupDate.toDateString() === dropoffDate.toDateString() &&
+      pickupTime >= dropoffTime
+    ) {
+      newErrors.dropoffTime =
+        "Drop-off time must be later than the pick-up time on the same day.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleCheckboxChange = () => {
     setIsSameDropoff(!isSameDropoff);
@@ -32,27 +72,19 @@ const SearchAvailability = () => {
   };
 
   const handleSearch = () => {
-    if (
-      !pickupLocation ||
-      !pickupDate ||
-      !pickupTime ||
-      !dropoffDate ||
-      !dropoffTime
-    ) {
-      alert("Please fill in all required fields!");
-      return;
+    setIsSubmitted(true);
+    if (validateForm()) {
+      navigate("/available-vehicles", {
+        state: {
+          pickupLocation,
+          dropoffLocation: isSameDropoff ? pickupLocation : dropoffLocation,
+          pickupDate,
+          pickupTime,
+          dropoffDate,
+          dropoffTime,
+        },
+      });
     }
-
-    navigate("/available-vehicles", {
-      state: {
-        pickupLocation,
-        dropoffLocation: isSameDropoff ? pickupLocation : dropoffLocation,
-        pickupDate,
-        pickupTime,
-        dropoffDate,
-        dropoffTime,
-      },
-    });
   };
 
   return (
@@ -75,10 +107,18 @@ const SearchAvailability = () => {
               className="w-full p-[11px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
             >
               <option value="">Select Pick-up Location</option>
-              <option value="New York">New York</option>
-              <option value="Los Angeles">Los Angeles</option>
-              <option value="Chicago">Chicago</option>
+              <option value="Brisbane">Brisbane</option>
+              <option value="Sydney">Sydney</option>
+              <option value="Melbourne">Melbourne</option>
+              <option value="Cairns">Cairns</option>
+              <option value="Perth">Perth</option>
+              <option value="Adelaide">Adelaide</option>
             </select>
+            {isSubmitted && errors.pickupLocation && (
+              <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                {isSubmitted && errors.pickupLocation}
+              </p>
+            )}
             <div className="flex items-center mb-2">
               <input
                 type="checkbox"
@@ -112,10 +152,18 @@ const SearchAvailability = () => {
                 className="w-full p-[11px] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
               >
                 <option value="">Select Drop-off Location</option>
-                <option value="New York">New York</option>
-                <option value="Los Angeles">Los Angeles</option>
-                <option value="Chicago">Chicago</option>
+                <option value="Brisbane">Brisbane</option>
+                <option value="Sydney">Sydney</option>
+                <option value="Melbourne">Melbourne</option>
+                <option value="Cairns">Cairns</option>
+                <option value="Perth">Perth</option>
+                <option value="Adelaide">Adelaide</option>
               </select>
+              {isSubmitted && errors.dropoffLocation && (
+                <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                  {isSubmitted && errors.dropoffLocation}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -136,8 +184,14 @@ const SearchAvailability = () => {
               onChange={setPickupDate}
               clearIcon={null}
               dateFormat="dd-MM-yyyy"
+              minDate={new Date()}
               disableClock
             />
+            {isSubmitted && errors.pickupDate && (
+              <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                {isSubmitted && errors.pickupDate}
+              </p>
+            )}
           </div>
 
           {/* Pickup Time */}
@@ -161,6 +215,11 @@ const SearchAvailability = () => {
                 </option>
               ))}
             </select>
+            {isSubmitted && errors.pickupTime && (
+              <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                {errors.pickupTime}
+              </p>
+            )}
           </div>
 
           {/* Drop-off Date */}
@@ -178,8 +237,14 @@ const SearchAvailability = () => {
               onChange={setDropoffDate}
               clearIcon={null}
               dateFormat="dd-MM-yyyy"
+              minDate={new Date()}
               disableClock
             />
+            {isSubmitted && errors.dropoffDate && (
+              <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                {isSubmitted && errors.dropoffDate}
+              </p>
+            )}
           </div>
 
           {/* Drop-off Time */}
@@ -203,6 +268,11 @@ const SearchAvailability = () => {
                 </option>
               ))}
             </select>
+            {isSubmitted && errors.dropoffTime && (
+              <p className="bg-red-50 p-2 rounded text-red-400 text-sm mt-1">
+                {isSubmitted && errors.dropoffTime}
+              </p>
+            )}
           </div>
         </div>
 
