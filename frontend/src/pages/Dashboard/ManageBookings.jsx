@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import moment from "moment";
 import { baseURL } from "../../utils/baseUrl";
+import { Link } from "react-router-dom";
 
 const ManageBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -82,7 +83,6 @@ const ManageBookings = () => {
     );
   });
 
-  // Handle loading and error states
   if (loading) {
     return <div>Loading bookings...</div>;
   }
@@ -184,16 +184,26 @@ const ManageBookings = () => {
               </td>
               {/* Booking Actions */}
               <td className="border-b border-blue-gray-50">
-                {/* Delete Button */}
-                <button
-                  className="relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-gray-900 hover:bg-gray-900/10 active:bg-gray-900/20"
-                  type="button"
-                  onClick={() => handleDelete(booking._id)}
-                >
-                  <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
-                    <RiDeleteBinFill size={16} color="red" />
-                  </span>
-                </button>
+                <div className="flex items-center gap-3">
+                  {/* View Booking Link */}
+                  <Link
+                    to={`/booking/${bookings[0]?._id}`}
+                    className="underline text-blue-500"
+                  >
+                    View
+                  </Link>
+
+                  {/* Delete Button */}
+                  <button
+                    className="relative align-middle select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-gray-900 hover:bg-gray-900/10 active:bg-gray-900/20"
+                    type="button"
+                    onClick={() => handleDelete(booking._id)}
+                  >
+                    <span className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
+                      <RiDeleteBinFill size={16} color="red" />
+                    </span>
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

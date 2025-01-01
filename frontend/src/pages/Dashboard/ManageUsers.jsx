@@ -16,7 +16,6 @@ const ManageUsers = () => {
   const [userToDelete, setUserToDelete] = useState(null);
 
   const { users, status, error } = useSelector((state) => state.users);
-
   const handleDelete = (userId) => {
     setUserToDelete(userId);
     setShowModal(true);
@@ -138,9 +137,19 @@ const ManageUsers = () => {
               {/* User Bookings */}
               <td className="border-b border-blue-gray-50">
                 <div className="w-max">
-                  <button className="underline text-blue-500">link</button>
+                  {user.bookings.length > 0 ? (
+                    <Link
+                      to={`/booking/${user.bookings[0]?._id}`}
+                      className="underline text-blue-500"
+                    >
+                      View Booking
+                    </Link>
+                  ) : (
+                    <span className="text-gray-500">No bookings</span> // Display a message if no bookings
+                  )}
                 </div>
               </td>
+
               {/* User actions */}
               <td className="border-b border-blue-gray-50">
                 <div className="flex gap-2">

@@ -10,7 +10,6 @@ import SignIn from "./components/SignIn";
 import Footer from "./components/Footer";
 import SignUp from "./components/SignUp";
 import { PrivateRouteAdmin, PrivateRouteUser } from "./components/PrivateRoute";
-import Bookings from "./pages/Bookings";
 import DashboardLayout from "./pages/Dashboard/DashboardLayout";
 import ManageBookings from "./pages/Dashboard/ManageBookings";
 import ManageVehicles from "./pages/Dashboard/ManageVehicles";
@@ -21,6 +20,8 @@ import UpdateUser from "./pages/Dashboard/UpdateUser";
 import AvailableVehicles from "./pages/AvailableVehicles";
 import ReviewBooking from "./pages/ReviewBooking";
 import PaymentSuccess from "./components/PaymentSuccess";
+import BookingUser from "./pages/BookingUser";
+import BookingPage from "./pages/BookingPage";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route path="/available-vehicles" element={<AvailableVehicles />} />
         <Route path="/reviewBooking" element={<ReviewBooking />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="booking/:id" element={<BookingPage />} />
 
         {/* ADMIN DASHBOARD ROUTE*/}
         <Route
@@ -57,10 +59,10 @@ function App() {
 
         {/* USER ROUTE*/}
         <Route
-          path="/bookings"
+          path="/user-booking"
           element={
             <PrivateRouteUser>
-              <Bookings />
+              <BookingUser />
             </PrivateRouteUser>
           }
         />

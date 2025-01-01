@@ -57,7 +57,7 @@ const Navbar = () => {
 
             {currentUser && !currentUser?.isAdmin && (
               <NavLink
-                to="/bookings"
+                to="/user-booking"
                 className={({ isActive }) =>
                   `relative text-gray-600 hover:text-gray-800 font-medium transition-colors ${
                     isActive
@@ -66,7 +66,7 @@ const Navbar = () => {
                   }`
                 }
               >
-                Bookings
+                Your Booking
               </NavLink>
             )}
 

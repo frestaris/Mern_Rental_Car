@@ -91,21 +91,54 @@ export const deleteBooking = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!req.user.isAdmin) {
-      return res
-        .status(403)
-        .json({ error: "You are not allowed to delete cars" });
-    }
-    // Find the booking to delete
-    const booking = await Booking.findById(id);
+    // Check if the user is an admin
+    if (req.user.isAdmin) {
+      // Admin can delete any booking
+      const booking = await Booking.findById(id);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
 
+      // Find the car associated with the booking
+      const car = await Car.findById(booking.car);
+      if (!car) {
+        return res.status(404).json({ message: "Car not found" });
+      }
+
+      // Update car status to "available"
+      car.status = "available";
+      await car.save();
+
+      // Remove the booking from the user's list of bookings
+      const user = await User.findById(booking.user);
+      if (user) {
+        user.bookings = user.bookings.filter(
+          (bookingId) => bookingId.toString() !== id
+        );
+        await user.save();
+      }
+
+      // Delete the booking
+      await booking.deleteOne();
+
+      return res.status(200).json({ message: "Booking successfully deleted" });
+    }
+
+    // If the user is not an admin, they can only delete their own booking
+    const booking = await Booking.findById(id);
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
     }
 
+    // Check if the booking belongs to the logged-in user
+    if (booking.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        error: "You can only delete your own booking",
+      });
+    }
+
     // Find the car associated with the booking
     const car = await Car.findById(booking.car);
-
     if (!car) {
       return res.status(404).json({ message: "Car not found" });
     }
@@ -138,7 +171,7 @@ export const deleteBooking = async (req, res) => {
 export const getBookingsByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
-    const bookings = await Booking.find({ user: userId });
+    const bookings = await Booking.find({ user: userId }).populate("car");
 
     // If no bookings found
     if (!bookings || bookings.length === 0) {
