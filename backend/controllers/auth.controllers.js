@@ -49,7 +49,7 @@ export const signin = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
   try {
-    const validUser = await User.findOne({ email });
+    const validUser = await User.findOne({ email }).populate("bookings");
     if (!validUser) {
       return res.status(404).json({ message: "User not found!" });
     }

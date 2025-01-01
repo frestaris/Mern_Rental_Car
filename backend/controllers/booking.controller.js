@@ -60,7 +60,7 @@ export const getAvailableVehicles = async (req, res) => {
 // GET ALL BOOKINGS
 export const getBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find();
+    const bookings = await Booking.find().populate("user").populate("car");
 
     res.status(200).json(bookings);
   } catch (error) {
@@ -71,16 +71,67 @@ export const getBookings = async (req, res) => {
 
 // GET A BOOKING BY ID
 export const getBookingById = async (req, res) => {
+  const { id } = req.params;
   try {
-    const booking = await Booking.findById({ _id: req.params.id });
+    const booking = await Booking.findById(id).populate("user").populate("car");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
     }
+
     res.status(200).json(booking);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching booking:", error.message);
     res.status(500).json({ message: "Error fetching booking" });
+  }
+};
+
+// DELETE A BOOKING BY ID
+export const deleteBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.user.isAdmin) {
+      return res
+        .status(403)
+        .json({ error: "You are not allowed to delete cars" });
+    }
+    // Find the booking to delete
+    const booking = await Booking.findById(id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Find the car associated with the booking
+    const car = await Car.findById(booking.car);
+
+    if (!car) {
+      return res.status(404).json({ message: "Car not found" });
+    }
+
+    // Update car status to "available"
+    car.status = "available";
+    await car.save();
+
+    // Remove the booking from the user's list of bookings
+    const user = await User.findById(booking.user);
+    if (user) {
+      user.bookings = user.bookings.filter(
+        (bookingId) => bookingId.toString() !== id
+      );
+      await user.save();
+    }
+
+    // Delete the booking
+    await booking.deleteOne();
+
+    res.status(200).json({ message: "Booking successfully deleted" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error deleting booking", error: error.message });
   }
 };
 

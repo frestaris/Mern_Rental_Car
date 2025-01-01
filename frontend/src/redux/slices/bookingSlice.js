@@ -2,16 +2,27 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseURL } from "../../utils/baseUrl";
 
-export const fetchBookingsByUser = createAsyncThunk(
-  "bookings/fetchByUser",
-  async (userId, thunkAPI) => {
+// Delete a booking by ID
+export const deleteBooking = createAsyncThunk(
+  "bookings/deleteBooking",
+  async (bookingId, { getState, rejectWithValue }) => {
     try {
-      const response = await axios.get(`${baseURL}/api/booking/user/${userId}`);
-      return response.data;
+      const { currentUser } = getState().auth;
+      const token = currentUser?.token;
+
+      if (!token) {
+        return rejectWithValue("No token, please login first.");
+      }
+
+      await axios.delete(`${baseURL}/api/booking/delete/${bookingId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      return bookingId;
     } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response.data || "Error fetching bookings"
-      );
+      return rejectWithValue(error.response?.data || "Error deleting booking");
     }
   }
 );
@@ -30,17 +41,19 @@ const bookingsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchBookingsByUser.pending, (state) => {
+      // Delete booking
+      .addCase(deleteBooking.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
-      .addCase(fetchBookingsByUser.fulfilled, (state, action) => {
+      .addCase(deleteBooking.fulfilled, (state, action) => {
         state.loading = false;
-        state.bookings = action.payload;
+        state.bookings = state.bookings.filter(
+          (booking) => booking._id !== action.payload
+        );
       })
-      .addCase(fetchBookingsByUser.rejected, (state, action) => {
+      .addCase(deleteBooking.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to fetch bookings";
+        state.error = action.payload || "Failed to delete booking";
       });
   },
 });
