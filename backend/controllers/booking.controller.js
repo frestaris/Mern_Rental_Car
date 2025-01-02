@@ -375,8 +375,27 @@ export const paymentSuccessful = async (req, res) => {
         .json({ message: "Car daily rate is not defined." });
     }
 
-    const daysDifference = moment(endDate).diff(moment(startDate), "days");
-    const totalCost = car.pricePerDay * daysDifference;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (isNaN(start) || isNaN(end)) {
+      return res.status(400).json({ message: "Invalid date format." });
+    }
+
+    if (start >= end) {
+      return res
+        .status(400)
+        .json({ message: "End date must be after start date." });
+    }
+
+    const rentalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    if (rentalDays <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Booking duration must be at least one day." });
+    }
+
+    const totalCost = rentalDays * car.pricePerDay;
 
     if (isNaN(totalCost) || totalCost <= 0) {
       return res
@@ -384,14 +403,13 @@ export const paymentSuccessful = async (req, res) => {
         .json({ message: "Invalid total cost calculation." });
     }
 
-    // Create new booking
     const newBooking = await Booking.create({
       user: userId,
       car: carId,
       pickupLocation,
       dropoffLocation,
-      startDate: moment(startDate).format("YYYY-MM-DD"),
-      endDate: moment(endDate).format("YYYY-MM-DD"),
+      startDate: start,
+      endDate: end,
       pickupTime,
       dropoffTime,
       totalCost,
@@ -404,7 +422,6 @@ export const paymentSuccessful = async (req, res) => {
     car.status = "booked";
     await car.save();
 
-    // Add booking to the user
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found." });

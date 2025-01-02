@@ -20,7 +20,6 @@ const SearchAvailability = () => {
     const options = [];
     for (let hour = start; hour <= end; hour++) {
       options.push(`${hour.toString().padStart(2, "0")}:00`);
-      options.push(`${hour.toString().padStart(2, "0")}:30`);
     }
     return options;
   };
