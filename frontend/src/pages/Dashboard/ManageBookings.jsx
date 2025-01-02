@@ -187,7 +187,7 @@ const ManageBookings = () => {
                 <div className="flex items-center gap-3">
                   {/* View Booking Link */}
                   <Link
-                    to={`/booking/${bookings[0]?._id}`}
+                    to={`/booking/${booking._id}`}
                     className="underline text-blue-500"
                   >
                     View

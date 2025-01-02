@@ -57,7 +57,6 @@ const BookingUser = () => {
           }
         );
         setLoading(false);
-        console.log(response.data);
         if (response.data.length === 0) {
           setBookings([]);
         } else {
@@ -107,9 +106,9 @@ const BookingUser = () => {
             key={booking._id}
             className="relative flex justify-between items-center mb-6 border-b-4 border-amber-500"
           >
-            {/* Delete Button (Positioned top-right) */}
+            {/* Delete Button */}
             <button
-              className="absolute top-0 right-0 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300"
+              className="absolute top-0 right-0 bg-red-600 text-white px-3 py-1 rounded-full hover:bg-red-700 transition duration-300"
               onClick={() => handleDelete(booking._id)}
             >
               X
@@ -123,7 +122,8 @@ const BookingUser = () => {
                     <h2 className="text-2xl font-semibold text-gray-700 mb-4">
                       Booking Details
                     </h2>
-
+                    <strong className="text-amber-600">Booking ID:</strong>
+                    <p className="text-gray-600 mb-5">{booking._id}</p>
                     {/* Pickup and Dropoff Locations */}
                     <div className="grid grid-cols-2 gap-6 mb-6">
                       <div>

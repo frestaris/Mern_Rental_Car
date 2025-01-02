@@ -11,7 +11,6 @@ const BookingPage = () => {
   const [error, setError] = useState(null);
 
   const token = useSelector((state) => state.auth.currentUser?.token);
-  const currentUser = useSelector((state) => state.auth.currentUser);
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -30,6 +29,7 @@ const BookingPage = () => {
             },
           }
         );
+
         setBooking(response.data);
         setLoading(false);
       } catch (err) {
@@ -64,6 +64,8 @@ const BookingPage = () => {
     startDate,
     endDate,
     car,
+    pickupTime,
+    dropoffTime,
     totalCost,
   } = booking;
 
@@ -115,29 +117,17 @@ const BookingPage = () => {
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
                 <strong className="text-amber-600">Pickup Time:</strong>
-                <p className="text-gray-600">
-                  {startDate &&
-                    new Date(startDate).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                </p>
+                <p className="text-gray-600">{pickupTime}</p>
               </div>
               <div>
                 <strong className="text-amber-600">Dropoff Time:</strong>
-                <p className="text-gray-600">
-                  {endDate &&
-                    new Date(endDate).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                </p>
+                <p className="text-gray-600">{dropoffTime}</p>
               </div>
             </div>
 
             <div>
               <strong className="text-amber-600">Email:</strong>
-              <p className="text-gray-600">{currentUser.email}</p>
+              <p className="text-gray-600">{booking.user.email}</p>
             </div>
           </div>
 

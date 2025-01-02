@@ -214,7 +214,7 @@ export const createSession = async (req, res) => {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `Car rental: ${bookingData.carId.name}`,
+              name: `Car: ${bookingData.carId.name}`,
               images: [carImage],
               description: `Total Days: ${bookingData.totalDays}`,
             },
@@ -315,11 +315,16 @@ export const addBookingWithoutStripe = async (req, res) => {
       totalCost,
       status: "confirmed",
     });
+
+    car.status = "booked";
+    await car.save();
+
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
     user.bookings.push(newBooking._id);
+
     await user.save();
     res.status(201).json(newBooking);
   } catch (error) {
