@@ -24,6 +24,7 @@ const ManageBookings = () => {
   const loadMoreBookings = () => {
     setVisibleBookings((prevCount) => prevCount + 5);
   };
+
   const handleDelete = (bookingId) => {
     setBookingToDelete(bookingId);
     setShowModal(true);
@@ -121,7 +122,7 @@ const ManageBookings = () => {
             </th>
             <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 py-4 pl-1">
               <p className="block antialiased font-sans text-sm text-blue-gray-900 font-normal leading-none opacity-70">
-                Date
+                Dates
               </p>
             </th>
             <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 py-4 pl-1">

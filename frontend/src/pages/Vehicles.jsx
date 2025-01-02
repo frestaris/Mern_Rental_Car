@@ -17,7 +17,11 @@ const Vehicles = () => {
   const [sortOption, setSortOption] = useState("");
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  const [visibleVehicles, setVisibleVehicles] = useState(8);
 
+  const loadMoreVehicles = () => {
+    setVisibleVehicles((prevCount) => prevCount + 4);
+  };
   const categories = [
     "Cars",
     "SUVs",
@@ -202,16 +206,19 @@ const Vehicles = () => {
         {status === "loading" ? (
           <p>Loading...</p>
         ) : status === "failed" ? (
-          <p>{error}</p>
+          <p className="text-red-500">{error}</p>
         ) : (
-          filteredCars.map((car, index) => (
+          filteredCars.slice(0, visibleVehicles).map((car, index) => (
             <div
               className="bg-white shadow-lg rounded-xl border border-gray-200 w-80 p-6 flex flex-col justify-between hover:shadow-2xl transition-shadow group"
               key={index}
             >
+              {/* Car Name */}
               <h3 className="text-2xl font-semibold text-gray-800 mb-3 text-center">
                 {car.name}
               </h3>
+
+              {/* Car Image */}
               <div className="w-full h-48 flex justify-center items-center overflow-hidden mb-4">
                 <img
                   src={car.image}
@@ -219,6 +226,8 @@ const Vehicles = () => {
                   className="object-contain w-full h-full transform transition-transform group-hover:scale-110"
                 />
               </div>
+
+              {/* Car Details */}
               <div className="flex-grow">
                 <p className="text-md text-gray-500 mb-2">
                   <span className="font-semibold text-amber-500">
@@ -226,12 +235,14 @@ const Vehicles = () => {
                   </span>{" "}
                   {car.category}
                 </p>
-                <p className="text-md text-gray-500 mb-5 border-b-2">
+                <p className="text-md text-gray-500 mb-5 border-b-2 pb-2">
                   <span className="font-semibold text-amber-500">
                     Price per day:
                   </span>{" "}
                   ${car.pricePerDay}
                 </p>
+
+                {/* Car Stats */}
                 <div className="flex justify-between">
                   <p className="text-md text-gray-500 mb-1 flex items-center gap-1">
                     <PiSeatbeltFill className="text-amber-600 text-2xl" />
@@ -251,6 +262,17 @@ const Vehicles = () => {
           ))
         )}
       </div>
+
+      {filteredCars.length > visibleVehicles && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={loadMoreVehicles}
+            className="px-4 py-2 mb-5 bg-amber-500 text-white rounded-md hover:bg-amber-600"
+          >
+            Load More Vehicles
+          </button>
+        </div>
+      )}
     </div>
   );
 };
