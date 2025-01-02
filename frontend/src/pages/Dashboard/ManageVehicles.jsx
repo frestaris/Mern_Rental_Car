@@ -59,7 +59,7 @@ const ManageVehicles = () => {
 
   return (
     <div>
-      <div className="relative">
+      <div className="relative flex items-center">
         <input
           type="text"
           placeholder="Search vehicles..."
@@ -71,7 +71,11 @@ const ManageVehicles = () => {
           className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-500"
           size={18}
         />
+        <p className="ml-2">
+          Tot. cars: <span className="font-semibold">{vehicles.length}</span>
+        </p>
       </div>
+
       <table className="w-full min-w-max md:m-0 ml-2 table-auto text-left">
         <thead>
           <tr>

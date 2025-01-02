@@ -23,12 +23,12 @@ export const getAvailableVehicles = async (req, res) => {
         .json({ message: "Drop-off date must be after the pickup date." });
     }
 
-    // Fetch all bookings
-    const availableBookings = await Car.find();
+    // Fetch all cars
+    const allCars = await Car.find();
 
     // Check car availability for the date range
     const availableCarIds = [];
-    for (const car of availableBookings) {
+    for (const car of allCars) {
       const existingBooking = await Booking.findOne({
         car: car._id,
         $or: [
@@ -37,21 +37,21 @@ export const getAvailableVehicles = async (req, res) => {
       });
 
       // If no existing booking is found, the car is available
-      if (!existingBooking && car.status !== "booked") {
+      if (!existingBooking) {
         availableCarIds.push(car._id);
       }
     }
 
     // Return available bookings
-    const bookings = await Car.find({ _id: { $in: availableCarIds } });
+    const availableCars = await Car.find({ _id: { $in: availableCarIds } });
 
-    if (bookings.length === 0) {
+    if (availableCars.length === 0) {
       return res
         .status(404)
-        .json({ message: "No available bookings for the selected dates." });
+        .json({ message: "No available vehicles for the selected dates." });
     }
 
-    res.status(200).json(bookings);
+    res.status(200).json(availableCars);
   } catch (error) {
     res.status(500).json({ message: "Server error.", error: error.message });
   }

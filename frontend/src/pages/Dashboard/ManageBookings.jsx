@@ -94,7 +94,7 @@ const ManageBookings = () => {
 
   return (
     <div>
-      <div className="relative">
+      <div className="relative flex items-center">
         <input
           type="text"
           placeholder="Search bookings..."
@@ -106,6 +106,10 @@ const ManageBookings = () => {
           className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-500"
           size={18}
         />
+        <p className="ml-2">
+          Tot. bookings:{" "}
+          <span className="font-semibold">{bookings.length}</span>
+        </p>
       </div>
       <table className="w-full min-w-max md:m-0 ml-2 table-auto text-left">
         <thead>
