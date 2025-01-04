@@ -20,7 +20,6 @@ app.use(
   cors({
     origin: "https://mern-car-rent.netlify.app",
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
