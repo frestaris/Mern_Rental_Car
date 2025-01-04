@@ -120,7 +120,6 @@ export const getAvailableVehicles = createAsyncThunk(
         `${baseURL}/api/booking/available-vehicles`,
         {
           params: { pickupDate, dropoffDate },
-          ...config,
         }
       );
       return response.data;
