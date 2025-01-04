@@ -9,6 +9,7 @@ import axios from "axios";
 import moment from "moment";
 import { baseURL } from "../../utils/baseUrl";
 import { Link } from "react-router-dom";
+import Spinner from "../../components/Spinner";
 
 const ManageBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -85,7 +86,11 @@ const ManageBookings = () => {
   });
 
   if (loading) {
-    return <div>Loading bookings...</div>;
+    return (
+      <div className="flex items-center justify-center mt-20">
+        <Spinner />
+      </div>
+    );
   }
 
   if (error) {

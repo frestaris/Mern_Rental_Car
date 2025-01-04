@@ -5,6 +5,7 @@ import { GiGearStickPattern } from "react-icons/gi";
 import { PiSeatbeltFill } from "react-icons/pi";
 import { IoIosSpeedometer } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
+import Spinner from "../components/Spinner";
 
 const Vehicles = () => {
   const dispatch = useDispatch();
@@ -204,7 +205,7 @@ const Vehicles = () => {
       {/* Cars List */}
       <div className="flex flex-wrap gap-6 justify-center">
         {status === "loading" ? (
-          <p>Loading...</p>
+          <Spinner />
         ) : status === "failed" ? (
           <p className="text-red-500">{error}</p>
         ) : (

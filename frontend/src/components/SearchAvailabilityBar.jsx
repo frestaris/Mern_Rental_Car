@@ -2,6 +2,7 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
+import Spinner from "./Spinner";
 
 const SearchAvailabilityBar = ({
   pickupLocation,
@@ -26,6 +27,7 @@ const SearchAvailabilityBar = ({
   const [isSameDropoff, setIsSameDropoff] = useState(
     dropoffLocation === pickupLocation
   );
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const navigate = useNavigate();
@@ -86,6 +88,7 @@ const SearchAvailabilityBar = ({
   };
 
   const handleSearch = () => {
+    setLoading(true);
     setIsSubmitted(true);
     if (validateForm()) {
       navigate("/available-vehicles", {
@@ -100,6 +103,9 @@ const SearchAvailabilityBar = ({
           dropoffTime: dropoffTimeState,
         },
       });
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     }
   };
 
@@ -298,8 +304,16 @@ const SearchAvailabilityBar = ({
             className="w-full bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-300"
             type="button"
             onClick={handleSearch}
+            disabled={loading}
           >
-            Update Search
+            {loading ? (
+              <div className="space-x-4">
+                <span>Updating Search...</span>
+                <Spinner size={20} color="white" />
+              </div>
+            ) : (
+              "Update Search"
+            )}
           </button>
         </div>
       </div>

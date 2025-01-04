@@ -7,6 +7,7 @@ import { RiDeleteBinFill } from "react-icons/ri";
 import { FaSearch } from "react-icons/fa";
 import DeleteModal from "../../components/DeleteModal";
 import { toast } from "react-toastify";
+import Spinner from "../../components/Spinner";
 
 const ManageVehicles = () => {
   const dispatch = useDispatch();
@@ -48,9 +49,12 @@ const ManageVehicles = () => {
     );
   });
 
-  // Handle loading and error states
   if (status === "loading") {
-    return <div>Loading vehicles...</div>;
+    return (
+      <div className="flex items-center justify-center mt-20">
+        <Spinner />
+      </div>
+    );
   }
 
   if (status === "failed") {

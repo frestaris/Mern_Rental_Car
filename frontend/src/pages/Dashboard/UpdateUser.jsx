@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserById, updateUser } from "../../redux/slices/usersSlice";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import { useParams } from "react-router-dom";
 
 const UpdateUser = () => {
@@ -47,9 +47,22 @@ const UpdateUser = () => {
     dispatch(updateUser({ id, userData: updatedFormData }));
 
     if (status === "succeeded") {
-      toast.success("User updated successfully!");
+      // Show success message with SweetAlert2
+      Swal.fire({
+        title: "Success!",
+        text: "User updated successfully!",
+        icon: "success",
+        confirmButtonText: "Close",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } else if (status === "failed" && error) {
-      toast.error(`Error: ${error}`);
+      Swal.fire({
+        title: "Error!",
+        text: `Error: ${error}`,
+        icon: "error",
+        confirmButtonText: "Close",
+      });
     }
   };
 

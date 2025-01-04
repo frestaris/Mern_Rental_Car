@@ -7,6 +7,7 @@ import { FaSearch } from "react-icons/fa";
 import DeleteModal from "../../components/DeleteModal";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import Spinner from "../../components/Spinner";
 
 const ManageUsers = () => {
   const dispatch = useDispatch();
@@ -49,7 +50,11 @@ const ManageUsers = () => {
   });
 
   if (status === "loading") {
-    return <div>Loading users...</div>;
+    return (
+      <div className="flex items-center justify-center mt-20">
+        <Spinner />
+      </div>
+    );
   }
 
   if (status === "failed") {

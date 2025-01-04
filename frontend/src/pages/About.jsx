@@ -103,7 +103,7 @@ const About = () => {
         <h2 className="text-2xl font-semibold mb-6 text-center">
           Frequently Asked Questions
         </h2>
-        <div>
+        <div className="space-y-2">
           {faqData.map((item, index) => (
             <div key={index} className="border border-gray-200">
               <div

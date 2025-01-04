@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addVehicle } from "../../redux/slices/vehicleSlice";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 const AddVehicle = () => {
   const [formData, setFormData] = useState({
@@ -63,7 +63,6 @@ const AddVehicle = () => {
     dispatch(addVehicle(updatedFormData));
 
     if (status === "succeeded") {
-      toast.success("Vehicle added successfully!");
       setFormData({
         name: "",
         category: "",
@@ -73,8 +72,19 @@ const AddVehicle = () => {
         fuelConsumption: "",
         image: "",
       });
+      Swal.fire({
+        title: "Success!",
+        text: "Vehicle added successfully!",
+        icon: "success",
+        confirmButtonText: "Close",
+      });
     } else if (status === "failed" && error) {
-      toast.error(`Error: ${error}`);
+      Swal.fire({
+        title: "Error!",
+        text: error || "Something went wrong.",
+        icon: "error",
+        confirmButtonText: "Close",
+      });
     }
   };
 

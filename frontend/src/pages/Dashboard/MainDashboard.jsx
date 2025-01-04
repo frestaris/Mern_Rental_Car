@@ -15,6 +15,7 @@ import moment from "moment";
 import { getCars } from "../../redux/slices/vehicleSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { getUsers } from "../../redux/slices/usersSlice";
+import Spinner from "../../components/Spinner";
 
 const MainDashboard = () => {
   const [bookings, setBookings] = useState([]);
@@ -35,6 +36,7 @@ const MainDashboard = () => {
 
   useEffect(() => {
     const fetchBookings = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(`${baseURL}/api/booking/get-bookings`);
         const formattedBookings = response.data.map((booking) => ({
@@ -47,12 +49,12 @@ const MainDashboard = () => {
 
         setBookings(formattedBookings);
         setTotalRevenue(revenue);
-        setLoading(false);
       } catch (err) {
         console.error("Error fetching bookings:", err);
         setError(
           err.response ? err.response.data.message : "Something went wrong."
         );
+      } finally {
         setLoading(false);
       }
     };
@@ -61,7 +63,11 @@ const MainDashboard = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center mt-20">
+        <Spinner />
+      </div>
+    );
   }
 
   if (error) {
@@ -100,22 +106,6 @@ const MainDashboard = () => {
           <h2 className="text-xl font-semibold text-black">Total Bookings:</h2>
           <span className="block text-md font-bold text-gray-600 mt-2">
             {bookings.length}
-          </span>
-        </div>
-
-        {/* Total Vehicles Section */}
-        <div className="bg-white flex-1 text-center rounded-lg border p-5 shadow-md mb-4 sm:w-full md:w-auto h-28">
-          <h2 className="text-xl font-semibold text-black">Total Vehicles:</h2>
-          <span className="block text-md font-bold text-gray-600 mt-2">
-            {vehicles.length}
-          </span>
-        </div>
-
-        {/* Total Users Section */}
-        <div className="bg-white flex-1 text-center rounded-lg border p-5 shadow-md mb-4 sm:w-full md:w-auto h-28">
-          <h2 className="text-xl font-semibold text-black">Total Users:</h2>
-          <span className="block text-md font-bold text-gray-600 mt-2">
-            {users.length}
           </span>
         </div>
       </div>

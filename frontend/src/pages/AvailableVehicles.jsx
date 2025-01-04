@@ -7,6 +7,7 @@ import { GiGearStickPattern } from "react-icons/gi";
 import { IoIosSpeedometer } from "react-icons/io";
 import SearchAvailabilityBar from "../components/SearchAvailabilityBar";
 import { FaChevronDown } from "react-icons/fa";
+import Spinner from "../components/Spinner";
 
 const AvailableVehicles = () => {
   const location = useLocation();
@@ -112,7 +113,7 @@ const AvailableVehicles = () => {
         />
         <div>
           {/* Booking Details Section */}
-          <h2 className="text-2xl font-semibold text-gray-700 my-4 border-b-4 border-amber-500">
+          <h2 className="text-2xl font-semibold text-gray-700 m-4 border-b-4 border-amber-500">
             Booking Details
           </h2>
         </div>
@@ -155,71 +156,82 @@ const AvailableVehicles = () => {
           </div>
         )}
       </div>
+
       {/* Vehicle Listing */}
       <div>
-        <h2 className="m-5 text-2xl text-gray-600">
-          Showing {sortedVehicles.length} results
-        </h2>
-        {loading && <p>Loading available vehicles...</p>}
-        {error && <p>{error.message || "An error occurred"}</p>}
+        {loading ? (
+          <div className="flex items-center justify-center my-20">
+            <Spinner />
+          </div>
+        ) : (
+          <>
+            <h2 className="m-5 text-2xl text-gray-600">
+              Showing {sortedVehicles.length} results
+            </h2>
 
-        {sortedVehicles.length === 0 && !loading && !error && (
-          <p>No vehicles available for the selected dates.</p>
-        )}
+            {error && <p>{error.message || "An error occurred"}</p>}
 
-        <div className="flex flex-wrap gap-6 justify-center">
-          {sortedVehicles.map((vehicle) => (
-            <div
-              className="bg-white shadow-lg rounded-xl border border-gray-200 w-80 p-6 flex flex-col justify-between hover:shadow-2xl transition-shadow group"
-              key={vehicle._id}
-            >
-              <h3 className="text-2xl font-semibold text-gray-800 mb-3 text-center">
-                {vehicle.name}
-              </h3>
-              <div className="w-full h-48 flex justify-center items-center overflow-hidden mb-4">
-                <img
-                  src={vehicle.image}
-                  alt={`${vehicle.name} image`}
-                  className="object-contain w-full h-full transform transition-transform group-hover:scale-110"
-                />
-              </div>
-              <div className="flex-grow">
-                <p className="text-md text-gray-500 mb-2">
-                  <span className="font-semibold text-amber-500">
-                    Category:
-                  </span>{" "}
-                  {vehicle.category}
-                </p>
-                <p className="text-md text-gray-500 mb-5 border-b-2">
-                  <span className="font-semibold text-amber-500">
-                    Price per day:
-                  </span>{" "}
-                  ${vehicle.pricePerDay}
-                </p>
-                <div className="flex justify-between">
-                  <p className="text-md text-gray-500 mb-1 flex items-center gap-1">
-                    <PiSeatbeltFill className="text-amber-600 text-2xl" />
-                    {vehicle.seats}
-                  </p>
-                  <p className="text-md text-gray-500 mb-1 flex items-center gap-1">
-                    <GiGearStickPattern className="text-amber-600 text-2xl" />
-                    {vehicle.transmission.charAt(0)}
-                  </p>
-                  <p className="text-md text-gray-500 mb-1 flex items-center gap-1">
-                    <IoIosSpeedometer className="text-amber-600 text-2xl" />
-                    {vehicle.fuelConsumption}
-                  </p>
+            {sortedVehicles.length === 0 && !error && (
+              <p className="text-2xl font-semibold text-gray-800">
+                No vehicles available for the selected dates.
+              </p>
+            )}
+
+            <div className="flex flex-wrap gap-6 justify-center">
+              {sortedVehicles.map((vehicle) => (
+                <div
+                  className="bg-white shadow-lg rounded-xl border border-gray-200 w-80 p-6 flex flex-col justify-between hover:shadow-2xl transition-shadow group"
+                  key={vehicle._id}
+                >
+                  <h3 className="text-2xl font-semibold text-gray-800 mb-3 text-center">
+                    {vehicle.name}
+                  </h3>
+                  <div className="w-full h-48 flex justify-center items-center overflow-hidden mb-4">
+                    <img
+                      src={vehicle.image}
+                      alt={`${vehicle.name} image`}
+                      className="object-contain w-full h-full transform transition-transform group-hover:scale-110"
+                    />
+                  </div>
+                  <div className="flex-grow">
+                    <p className="text-md text-gray-500 mb-2">
+                      <span className="font-semibold text-amber-500">
+                        Category:
+                      </span>{" "}
+                      {vehicle.category}
+                    </p>
+                    <p className="text-md text-gray-500 mb-5 border-b-2">
+                      <span className="font-semibold text-amber-500">
+                        Price per day:
+                      </span>{" "}
+                      ${vehicle.pricePerDay}
+                    </p>
+                    <div className="flex justify-between">
+                      <p className="text-md text-gray-500 mb-1 flex items-center gap-1">
+                        <PiSeatbeltFill className="text-amber-600 text-2xl" />
+                        {vehicle.seats}
+                      </p>
+                      <p className="text-md text-gray-500 mb-1 flex items-center gap-1">
+                        <GiGearStickPattern className="text-amber-600 text-2xl" />
+                        {vehicle.transmission.charAt(0)}
+                      </p>
+                      <p className="text-md text-gray-500 mb-1 flex items-center gap-1">
+                        <IoIosSpeedometer className="text-amber-600 text-2xl" />
+                        {vehicle.fuelConsumption}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleBookNow(vehicle)}
+                    className="mt-4 bg-amber-500 text-white py-2 px-6 rounded-lg hover:bg-amber-600 transition-colors"
+                  >
+                    Book Now
+                  </button>
                 </div>
-              </div>
-              <button
-                onClick={() => handleBookNow(vehicle)}
-                className="mt-4 bg-amber-500 text-white py-2 px-6 rounded-lg hover:bg-amber-600 transition-colors"
-              >
-                Book Now
-              </button>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
       </div>
     </div>
   );
