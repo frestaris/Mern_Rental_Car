@@ -222,7 +222,7 @@ export const createSession = async (req, res) => {
             product_data: {
               name: `Car: ${bookingData.carId.name}`,
               images: [carImage],
-              description: `Total Days: ${bookingData.totalDays}`,
+              description: `CARD DETAILS FOR TESTING PURPOSES: 4242 4242 4242 4242`,
             },
             unit_amount: bookingData.totalCost * 100,
           },

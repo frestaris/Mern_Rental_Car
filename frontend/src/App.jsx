@@ -39,6 +39,7 @@ function App() {
         <Route path="/available-vehicles" element={<AvailableVehicles />} />
         <Route path="/reviewBooking" element={<ReviewBooking />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancel" element={<Home />} />
         <Route path="booking/:id" element={<BookingPage />} />
 
         {/* ADMIN DASHBOARD ROUTE*/}
