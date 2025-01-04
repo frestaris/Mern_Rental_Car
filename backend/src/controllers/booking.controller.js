@@ -2,6 +2,7 @@ import Booking from "../models/booking.model.js";
 import Car from "../models/car.model.js";
 import User from "../models/user.model.js";
 import Stripe from "stripe";
+import mongoose from "mongoose";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -354,12 +355,14 @@ export const paymentSuccessful = async (req, res) => {
         .json({ message: "Car ID is missing in session metadata." });
     }
 
+    const carObjectId = mongoose.Types.ObjectId(carId);
+
     const existingBooking = await Booking.findOne({ session_id: session_id });
     if (existingBooking) {
       return res.status(200).json(existingBooking);
     }
 
-    const car = await Car.findById(carId);
+    const car = await Car.findById(carObjectId);
     if (!car) {
       return res.status(404).json({ message: "Car not found." });
     }
@@ -400,7 +403,7 @@ export const paymentSuccessful = async (req, res) => {
 
     const newBooking = await Booking.create({
       user: userId,
-      car: carId,
+      car: carObjectId,
       pickupLocation,
       dropoffLocation,
       startDate: start,
