@@ -13,6 +13,7 @@ const DashboardLayout = () => {
   };
 
   const links = [
+    { path: "/dashboard", label: "Dashboard" },
     { path: "/dashboard/add-vehicle", label: "Add New Vehicle" },
     { path: "/dashboard/manage-vehicles", label: "Manage Vehicles" },
     { path: "/dashboard/manage-users", label: "Manage Users" },

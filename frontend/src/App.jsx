@@ -22,6 +22,7 @@ import ReviewBooking from "./pages/ReviewBooking";
 import PaymentSuccess from "./components/PaymentSuccess";
 import BookingUser from "./pages/BookingUser";
 import BookingPage from "./pages/BookingPage";
+import MainDashboard from "./pages/Dashboard/MainDashboard";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
             </PrivateRouteAdmin>
           }
         >
+          <Route path="" element={<MainDashboard />} />
           <Route path="manage-vehicles" element={<ManageVehicles />} />
           <Route path="bookings" element={<ManageBookings />} />
           <Route path="add-vehicle" element={<AddVehicle />} />

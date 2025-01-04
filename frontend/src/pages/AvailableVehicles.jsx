@@ -1,15 +1,18 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAvailableVehicles } from "../redux/slices/vehicleSlice";
 import { PiSeatbeltFill } from "react-icons/pi";
 import { GiGearStickPattern } from "react-icons/gi";
 import { IoIosSpeedometer } from "react-icons/io";
 import SearchAvailabilityBar from "../components/SearchAvailabilityBar";
+import { FaChevronDown } from "react-icons/fa";
 
 const AvailableVehicles = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  const [sortOption, setSortOption] = useState("");
 
   const {
     pickupLocation,
@@ -57,6 +60,44 @@ const AvailableVehicles = () => {
       });
     }
   };
+  const parseFuelConsumption = (fuelConsumption) => {
+    const match = fuelConsumption.match(/(\d+(\.\d+)?)/);
+    return match ? parseFloat(match[0]) : 0;
+  };
+
+  const toggleDropdown = () => {
+    setSortDropdownOpen(!sortDropdownOpen);
+  };
+
+  const sortedVehicles = availableVehicles
+    .filter((vehicle) => {
+      if (sortOption === "Automatic")
+        return vehicle.transmission === "Automatic";
+      if (sortOption === "Manual") return vehicle.transmission === "Manual";
+      return true;
+    })
+    .sort((a, b) => {
+      switch (sortOption) {
+        case "Alphabetical":
+          return a.name.localeCompare(b.name);
+        case "PriceLowToHigh":
+          return a.pricePerDay - b.pricePerDay;
+        case "PriceHighToLow":
+          return b.pricePerDay - a.pricePerDay;
+        case "FuelEfficient":
+          return (
+            parseFuelConsumption(a.fuelConsumption) -
+            parseFuelConsumption(b.fuelConsumption)
+          );
+        case "LessEfficientFuel":
+          return (
+            parseFuelConsumption(b.fuelConsumption) -
+            parseFuelConsumption(a.fuelConsumption)
+          );
+        default:
+          return 0;
+      }
+    });
 
   return (
     <div>
@@ -70,62 +111,64 @@ const AvailableVehicles = () => {
           dropoffTime={dropoffTime}
         />
         <div>
+          {/* Booking Details Section */}
           <h2 className="text-2xl font-semibold text-gray-700 my-4 border-b-4 border-amber-500">
             Booking Details
           </h2>
-          <div className="grid grid-cols-2 gap-6 mb-6">
-            <div>
-              <strong className="text-amber-600">Pickup Location:</strong>
-              <p className="text-gray-600">{pickupLocation}</p>
-            </div>
-
-            <div>
-              <strong className="text-amber-600">Dropoff Location:</strong>
-              <p className="text-gray-600">{dropoffLocation}</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-6 mb-6">
-            <div>
-              <strong className="text-amber-600">Pickup Date:</strong>
-              <p className="text-gray-600">
-                {pickupDate && new Date(pickupDate).toLocaleDateString()}
-              </p>
-            </div>
-
-            <div>
-              <strong className="text-amber-600">Pickup Time:</strong>
-              <p className="text-gray-600">{pickupTime}</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-6 mb-6">
-            <div>
-              <strong className="text-amber-600">Dropoff Date:</strong>
-              <p className="text-gray-600">
-                {dropoffDate && new Date(dropoffDate).toLocaleDateString()}
-              </p>
-            </div>
-
-            <div>
-              <strong className="text-amber-600">Dropoff Time:</strong>
-              <p className="text-gray-600">{dropoffTime}</p>
-            </div>
-          </div>
         </div>
       </div>
-
+      {/* Sort Dropdown */}
+      <div className="relative md:w-36 mx-5">
+        <button
+          onClick={toggleDropdown}
+          className="p-[11px] rounded-lg border border-gray-300 bg-white flex items-center justify-between w-full"
+        >
+          Sort by
+          <FaChevronDown className="ml-2" />
+        </button>
+        {sortDropdownOpen && (
+          <div className="absolute z-20 bg-white border border-gray-300 mt-2 p-4 w-56 rounded-lg shadow-lg">
+            {[
+              "Alphabetical",
+              "PriceLowToHigh",
+              "PriceHighToLow",
+              "Automatic",
+              "Manual",
+              "FuelEfficient",
+              "LessEfficientFuel",
+            ].map((option) => (
+              <button
+                key={option}
+                onClick={() => {
+                  setSortOption(option);
+                  setSortDropdownOpen(false);
+                }}
+                className={`mb-2 w-full text-left p-2 rounded-lg ${
+                  sortOption === option
+                    ? "bg-amber-500 text-white"
+                    : "hover:bg-gray-200"
+                }`}
+              >
+                {option.replace(/([A-Z])/g, " $1")}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {/* Vehicle Listing */}
       <div>
         <h2 className="m-5 text-2xl text-gray-600">
-          Showing {availableVehicles.length} results
+          Showing {sortedVehicles.length} results
         </h2>
         {loading && <p>Loading available vehicles...</p>}
         {error && <p>{error.message || "An error occurred"}</p>}
 
-        {availableVehicles.length === 0 && !loading && !error && (
+        {sortedVehicles.length === 0 && !loading && !error && (
           <p>No vehicles available for the selected dates.</p>
         )}
 
         <div className="flex flex-wrap gap-6 justify-center">
-          {availableVehicles.map((vehicle) => (
+          {sortedVehicles.map((vehicle) => (
             <div
               className="bg-white shadow-lg rounded-xl border border-gray-200 w-80 p-6 flex flex-col justify-between hover:shadow-2xl transition-shadow group"
               key={vehicle._id}
