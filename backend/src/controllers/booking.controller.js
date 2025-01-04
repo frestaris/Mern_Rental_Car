@@ -349,20 +349,20 @@ export const paymentSuccessful = async (req, res) => {
       endDate,
     } = session.metadata;
 
-    if (!carId) {
-      return res
-        .status(400)
-        .json({ message: "Car ID is missing in session metadata." });
+    if (!mongoose.Types.ObjectId.isValid(carId)) {
+      return res.status(400).json({ message: "Invalid Car ID." });
     }
 
-    const carObjectId = mongoose.Types.ObjectId(carId);
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid User ID." });
+    }
 
-    const existingBooking = await Booking.findOne({ session_id: session_id });
+    const existingBooking = await Booking.findOne({ session_id });
     if (existingBooking) {
       return res.status(200).json(existingBooking);
     }
 
-    const car = await Car.findById(carObjectId);
+    const car = await Car.findById(carId);
     if (!car) {
       return res.status(404).json({ message: "Car not found." });
     }
@@ -403,7 +403,7 @@ export const paymentSuccessful = async (req, res) => {
 
     const newBooking = await Booking.create({
       user: userId,
-      car: carObjectId,
+      car: carId,
       pickupLocation,
       dropoffLocation,
       startDate: start,
@@ -416,7 +416,6 @@ export const paymentSuccessful = async (req, res) => {
     });
 
     await newBooking.save();
-
     car.status = "booked";
     await car.save();
 
