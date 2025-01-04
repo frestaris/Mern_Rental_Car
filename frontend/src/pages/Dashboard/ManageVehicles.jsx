@@ -161,7 +161,7 @@ const ManageVehicles = () => {
                         ? "Available"
                         : vehicle.status === "booked"
                         ? "Booked"
-                        : "Unavailable"}
+                        : "Not available"}
                     </span>
                   </div>
                 </div>

@@ -22,7 +22,6 @@ export const getAvailableVehicles = async (req, res) => {
         .json({ message: "Drop-off date must be after the pickup date." });
     }
 
-    // Fetch all cars
     const allCars = await Car.find();
 
     for (const car of allCars) {
@@ -35,20 +34,19 @@ export const getAvailableVehicles = async (req, res) => {
       }
     }
 
-    // Check car availability for the date range
     const availableCarIds = [];
     for (const car of allCars) {
-      const existingBooking = await Booking.findOne({
-        car: car._id,
-        $or: [{ startDate: { $lt: end }, endDate: { $gt: start } }],
-      });
+      if (car.status !== "not available") {
+        const existingBooking = await Booking.findOne({
+          car: car._id,
+          $or: [{ startDate: { $lt: end }, endDate: { $gt: start } }],
+        });
 
-      if (!existingBooking) {
-        availableCarIds.push(car._id);
+        if (!existingBooking) {
+          availableCarIds.push(car._id);
+        }
       }
     }
-
-    // Return available bookings
     const availableCars = await Car.find({ _id: { $in: availableCarIds } });
 
     if (availableCars.length === 0) {
