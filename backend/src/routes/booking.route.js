@@ -20,6 +20,6 @@ router.get("/get-booking/:id", verifyToken, getBookingById);
 router.delete("/delete/:id", verifyToken, deleteBooking);
 router.get("/user/:userId", verifyToken, getBookingsByUserId);
 router.post("/payment/create-session", createSession);
-router.post("/payment-success", paymentSuccessful);
+router.get("/payment-success", paymentSuccessful);
 
 export default router;

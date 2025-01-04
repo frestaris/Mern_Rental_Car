@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { baseURL, config } from "../../utils/baseUrl";
+import { baseURL } from "../../utils/baseUrl";
 
 // Add Vehicle
 export const addVehicle = createAsyncThunk(

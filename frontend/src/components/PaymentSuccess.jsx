@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { baseURL } from "../utils/baseUrl";
+import { baseURL, config } from "../utils/baseUrl";
 import Spinner from "./Spinner";
 
 const PaymentSuccess = () => {
@@ -23,8 +23,9 @@ const PaymentSuccess = () => {
         setLoading(true);
         hasCreatedBooking.current = true;
         try {
-          const response = await axios.post(
-            `${baseURL}/api/booking/payment-success?session_id=${sessionId}`
+          const response = await axios.get(
+            `${baseURL}/api/booking/payment-success?session_id=${sessionId}`,
+            config
           );
 
           if (response.data) {
