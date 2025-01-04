@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../redux/slices/authSlice";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const SignUp = () => {
   const [username, setUsername] = useState("");
@@ -16,14 +17,23 @@ const SignUp = () => {
     e.preventDefault();
     const userData = { username, email, password };
 
-    if (!username || !email || !password) {
-      return;
-    }
     try {
       await dispatch(registerUser(userData)).unwrap();
+      Swal.fire({
+        title: "Success!",
+        text: "Registration successful! Redirecting to sign-in page.",
+        icon: "success",
+        timer: 2000,
+      });
       navigate("/sign-in");
     } catch (error) {
       console.error("Registration failed:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Registration failed. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 

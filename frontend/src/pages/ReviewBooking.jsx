@@ -2,9 +2,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { resetError } from "../redux/slices/bookingSlice";
 import { addBooking } from "../redux/slices/bookingSlice";
+import { FaStripeS } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { baseURL } from "../utils/baseUrl";
+import Swal from "sweetalert2";
 
 const ReviewBooking = () => {
   const location = useLocation();
@@ -133,16 +135,7 @@ const ReviewBooking = () => {
       !pickupDate ||
       !dropoffDate ||
       !vehicle
-    ) {
-      alert("Please ensure all booking details are provided.");
-      return;
-    }
-
-    if (!currentUser || !currentUser._id) {
-      alert("User is not logged in. Please log in to proceed.");
-      return;
-    }
-
+    );
     const bookingData = {
       userId: currentUser._id,
       carId: {
@@ -164,11 +157,39 @@ const ReviewBooking = () => {
 
     try {
       dispatch(addBooking(bookingData));
-      alert("Booking has been successfully created.");
-      navigate(`/user-booking`);
+
+      let countdown = 3;
+
+      Swal.fire({
+        title: "Success",
+        html: `Booking has been successfully created.<br><strong>Redirecting in <span id="countdown">${countdown}</span> seconds...</strong>`,
+        icon: "success",
+        timer: countdown * 1000,
+        showConfirmButton: false,
+        willOpen: () => {
+          const interval = setInterval(() => {
+            countdown -= 1;
+            const countdownElement = document.getElementById("countdown");
+            if (countdownElement) {
+              countdownElement.textContent = countdown;
+            }
+            if (countdown === 0) {
+              clearInterval(interval);
+            }
+          }, 1000);
+        },
+        didClose: () => {
+          navigate(`/user-booking`);
+        },
+      });
     } catch (error) {
       console.error("Error during booking:", error);
-      alert("There was an issue creating your booking. Please try again.");
+      Swal.fire({
+        title: "Error",
+        text: "There was an issue creating your booking. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 
@@ -289,11 +310,18 @@ const ReviewBooking = () => {
         </div>
         <div className="m-0 md:mt-8 text-center">
           <button
-            className="bg-amber-500 text-white py-3 px-8 rounded-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
+            className="flex items-center justify-center bg-[#6772e5] text-white py-3 px-8 rounded-lg hover:bg-[#5469d4] transition-colors focus:outline-none focus:ring-2 focus:ring-[#5469d4] disabled:opacity-50"
             onClick={handleCheckoutWithStripe}
             disabled={loading}
           >
-            {loading ? "Processing..." : "Proceed Checkout with Stripe"}
+            {loading ? (
+              "Processing..."
+            ) : (
+              <>
+                <FaStripeS className="mr-2 text-white text-xl" />
+                Proceed Checkout with Stripe
+              </>
+            )}
           </button>
           {error && <p className="text-red-500 mt-4">{error}</p>}
         </div>

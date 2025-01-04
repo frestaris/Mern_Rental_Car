@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import moment from "moment";
 import { getCars } from "../../redux/slices/vehicleSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { getUsers } from "../../redux/slices/usersSlice";
 import Spinner from "../../components/Spinner";
 
@@ -23,8 +23,6 @@ const MainDashboard = () => {
   const [error, setError] = useState(null);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const dispatch = useDispatch();
-  const { vehicles } = useSelector((state) => state.vehicles);
-  const { users } = useSelector((state) => state.users);
 
   useEffect(() => {
     dispatch(getCars());

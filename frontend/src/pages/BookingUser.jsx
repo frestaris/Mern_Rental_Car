@@ -5,6 +5,7 @@ import { baseURL } from "../utils/baseUrl";
 import DeleteModal from "../components/DeleteModal";
 import { toast } from "react-toastify";
 import { deleteBooking } from "../redux/slices/bookingSlice";
+import Spinner from "../components/Spinner";
 
 const BookingUser = () => {
   const [bookings, setBookings] = useState([]);
@@ -74,7 +75,11 @@ const BookingUser = () => {
   }, [token, currentUser._id]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center mt-20">
+        <Spinner />
+      </div>
+    );
   }
 
   if (error) {

@@ -1,12 +1,18 @@
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setEmail("");
+    Swal.fire({
+      title: "Subscribed!",
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false,
+    });
   };
 
   return (
@@ -45,12 +51,6 @@ const Newsletter = () => {
             Subscribe
           </button>
         </form>
-
-        {submitted && (
-          <p className="mt-4 text-green-600">
-            Thank you for subscribing! We’ll keep you updated.
-          </p>
-        )}
       </div>
     </div>
   );

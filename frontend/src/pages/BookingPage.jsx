@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { baseURL } from "../utils/baseUrl";
+import Spinner from "../components/Spinner";
 
 const BookingPage = () => {
   const { id } = useParams();
@@ -43,7 +44,11 @@ const BookingPage = () => {
   }, [id, token]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center mt-20">
+        <Spinner />
+      </div>
+    );
   }
 
   if (error) {

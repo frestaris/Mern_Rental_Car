@@ -4,7 +4,7 @@ import { deleteBooking } from "../../redux/slices/bookingSlice";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { FaSearch } from "react-icons/fa";
 import DeleteModal from "../../components/DeleteModal";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import axios from "axios";
 import moment from "moment";
 import { baseURL } from "../../utils/baseUrl";
@@ -37,14 +37,24 @@ const ManageBookings = () => {
         .then(() => {
           setShowModal(false);
           setBookingToDelete(null);
-          toast.success("Booking deleted successfully!");
-
+          Swal.fire({
+            title: "Deleted!",
+            text: "Booking deleted successfully.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false,
+          });
           setBookings((prevBookings) =>
             prevBookings.filter((booking) => booking._id !== bookingToDelete)
           );
         })
         .catch((error) => {
-          toast.error("Error deleting booking: " + error.message);
+          Swal.fire({
+            title: "Error!",
+            text: `Error deleting booking: ${error.message}`,
+            icon: "error",
+            confirmButtonText: "OK",
+          });
         });
     }
   };

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseURL } from "../utils/baseUrl";
+import Spinner from "./Spinner";
 
 const PaymentSuccess = () => {
   const location = useLocation();
@@ -12,7 +13,7 @@ const PaymentSuccess = () => {
   const [booking, setBooking] = useState(null);
   const [error, setError] = useState(null);
   const [countdown, setCountdown] = useState(5);
-  const [redirecting, setRedirecting] = useState(false); // Added state for redirect control
+  const [redirecting, setRedirecting] = useState(false);
 
   const hasCreatedBooking = useRef(false);
 
@@ -49,7 +50,7 @@ const PaymentSuccess = () => {
             return prev - 1;
           } else {
             clearInterval(interval);
-            setRedirecting(true); // Ensure redirect happens after countdown ends
+            setRedirecting(true);
             return 0;
           }
         });
@@ -61,16 +62,14 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     if (redirecting) {
-      navigate("/user-booking"); // Trigger navigation after countdown is done
+      navigate("/user-booking");
     }
-  }, [redirecting, navigate]); // Add redirecting as dependency
+  }, [redirecting, navigate]);
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-lg font-semibold text-amber-500">
-          Processing your payment...
-        </p>
+      <div className="flex items-center justify-center mt-20">
+        <Spinner />
       </div>
     );
   }
