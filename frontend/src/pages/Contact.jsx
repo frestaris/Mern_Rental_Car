@@ -50,6 +50,7 @@ const Contact = () => {
         Need help or have any questions? Reach out to our team directly via the
         contact form below, or find more details on how to reach us.
       </p>
+      <div className="w-full border-b-8 rounded-full border-amber-600 mx-auto mb-10"></div>
 
       {/* Call Us Section */}
       <div className="mb-8">
@@ -72,7 +73,9 @@ const Contact = () => {
           <li>Customer Relations (For Past Rentals Only): 1234 567 890</li>
         </ul>
       </div>
-      <div className="mb-8 text-center text-lg font-semibold text-gray-700">
+      <div className="w-full border-b-8 rounded-full border-amber-600 mx-auto mb-10"></div>
+
+      <div className="mb-8 text-center text-2xl font-semibold text-gray-700">
         <p>For other inquiries, submit this form:</p>
       </div>
       {/* Form Section */}
