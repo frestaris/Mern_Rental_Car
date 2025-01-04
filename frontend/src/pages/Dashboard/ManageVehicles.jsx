@@ -6,7 +6,7 @@ import { MdEdit } from "react-icons/md";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { FaSearch } from "react-icons/fa";
 import DeleteModal from "../../components/DeleteModal";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner";
 
 const ManageVehicles = () => {
@@ -33,7 +33,13 @@ const ManageVehicles = () => {
       dispatch(deleteCar(vehicleToDelete));
       setShowModal(false);
       setVehicleToDelete(null);
-      toast.success("Vehicle deleted successfully!");
+      Swal.fire({
+        title: "Success",
+        text: "Vehicle deleted successfully!",
+        icon: "success",
+        timer: 1000,
+        showConfirmButton: false,
+      });
     }
   };
 

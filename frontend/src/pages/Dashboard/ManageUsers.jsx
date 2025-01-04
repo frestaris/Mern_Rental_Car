@@ -5,7 +5,7 @@ import { MdEdit } from "react-icons/md";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { FaSearch } from "react-icons/fa";
 import DeleteModal from "../../components/DeleteModal";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { Link } from "react-router-dom";
 import Spinner from "../../components/Spinner";
 
@@ -27,7 +27,13 @@ const ManageUsers = () => {
       dispatch(deleteUser(userToDelete));
       setShowModal(false);
       setUserToDelete(null);
-      toast.success("User deleted successfully!");
+      Swal.fire({
+        title: "Success",
+        text: "User deleted successfully!",
+        icon: "success",
+        timer: 1000,
+        showConfirmButton: false,
+      });
     }
   };
 

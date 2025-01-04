@@ -288,7 +288,7 @@ const ReviewBooking = () => {
                 </p>
                 <p>
                   <strong className="text-amber-600">Total Cost:</strong> $
-                  {totalCost}
+                  {new Intl.NumberFormat().format(totalCost)}
                 </p>
               </div>
             </div>
