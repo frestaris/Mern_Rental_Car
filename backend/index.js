@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: "https://mern-car-rent.netlify.app/",
+    origin: "https://mern-car-rent.netlify.app",
     credentials: true,
   })
 );
