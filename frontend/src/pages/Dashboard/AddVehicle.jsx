@@ -68,19 +68,22 @@ const AddVehicle = () => {
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "oifdoxrm");
+    formData.append(
+      "upload_preset",
+      import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+    );
 
     try {
       const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/dxbalmukb/image/upload",
+        import.meta.env.VITE_CLOUDINARY_API_URL,
         formData
       );
       const imageUrl = response.data.secure_url;
       setFormData((prevData) => ({ ...prevData, image: imageUrl }));
       setIsUploading(false);
-      setFormData({});
-      document.getElementById("fileInput").value = "";
+      setFormData((prevData) => ({ ...prevData, image: imageUrl }));
       Swal.fire("Success!", "Image uploaded successfully!", "success");
+      e.target.value = "";
     } catch (error) {
       setIsUploading(false);
       console.error(error);
@@ -88,10 +91,26 @@ const AddVehicle = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Prepare the updated form data
+    if (
+      !formData.name ||
+      !formData.category ||
+      !formData.pricePerDay ||
+      !formData.seats ||
+      !formData.transmission ||
+      !formData.fuelConsumption ||
+      !formData.image
+    ) {
+      Swal.fire(
+        "Error!",
+        "All fields are required, including the image.",
+        "error"
+      );
+      return;
+    }
+
     const updatedFormData = {
       ...formData,
       fuelConsumption:
@@ -100,29 +119,37 @@ const AddVehicle = () => {
           : formData.fuelConsumption + " l/100km",
     };
 
-    // Dispatch the action
-    dispatch(addVehicle(updatedFormData));
+    try {
+      await dispatch(addVehicle(updatedFormData));
+      if (status === "succeeded") {
+        setFormData({
+          name: "",
+          category: "",
+          pricePerDay: "",
+          seats: "",
+          transmission: "",
+          fuelConsumption: "",
+          image: "",
+        });
 
-    if (status === "succeeded") {
-      setFormData({
-        name: "",
-        category: "",
-        pricePerDay: "",
-        seats: "",
-        transmission: "",
-        fuelConsumption: "",
-        image: "",
-      });
-      Swal.fire({
-        title: "Success!",
-        text: "Vehicle added successfully!",
-        icon: "success",
-        confirmButtonText: "Close",
-      });
-    } else if (status === "failed" && error) {
+        Swal.fire({
+          title: "Success!",
+          text: "Vehicle added successfully!",
+          icon: "success",
+          confirmButtonText: "Close",
+        });
+      } else if (status === "failed") {
+        Swal.fire({
+          title: "Error!",
+          text: error || "Failed to add vehicle.",
+          icon: "error",
+          confirmButtonText: "Close",
+        });
+      }
+    } catch (error) {
       Swal.fire({
         title: "Error!",
-        text: error || "Something went wrong.",
+        text: error?.message || "Something went wrong.",
         icon: "error",
         confirmButtonText: "Close",
       });

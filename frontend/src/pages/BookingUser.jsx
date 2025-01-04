@@ -3,9 +3,9 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { baseURL } from "../utils/baseUrl";
 import DeleteModal from "../components/DeleteModal";
-import { toast } from "react-toastify";
 import { deleteBooking } from "../redux/slices/bookingSlice";
 import Spinner from "../components/Spinner";
+import Swal from "sweetalert2";
 
 const BookingUser = () => {
   const [bookings, setBookings] = useState([]);
@@ -29,13 +29,24 @@ const BookingUser = () => {
         .then(() => {
           setShowModal(false);
           setBookingToDelete(null);
-          toast.success("Booking deleted successfully!");
+          Swal.fire({
+            title: "Success",
+            text: "Booking deleted successfully!",
+            icon: "success",
+            timer: 1000,
+            showConfirmButton: false,
+          });
           setBookings(
             bookings.filter((booking) => booking._id !== bookingToDelete)
           );
         })
         .catch((error) => {
-          toast.error("Error deleting booking: " + error.message);
+          Swal.fire({
+            title: "Error!",
+            text: `Error deleting booking: ${error.message}`,
+            icon: "error",
+            confirmButtonText: "OK",
+          });
         });
     }
   };

@@ -22,6 +22,7 @@ export const addVehicle = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
+      console.error("Error response:", error.response);
       return rejectWithValue(
         error.response?.data?.error || "Something went wrong"
       );

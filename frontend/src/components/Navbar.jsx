@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signoutSuccess } from "../redux/slices/authSlice";
+import logo from "../../public/logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,7 +19,11 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <h1 className="text-xl font-bold text-gray-800">CarRental</h1>
+            <img
+              className="w-32 h-32 object-cover"
+              src={logo}
+              alt="Car Rental Logo"
+            />
           </div>
 
           {/* Links */}

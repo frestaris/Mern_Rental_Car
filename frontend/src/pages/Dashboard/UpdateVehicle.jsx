@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getCarById, updateVehicle } from "../../redux/slices/vehicleSlice";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 
 const UpdateVehicle = () => {
@@ -80,9 +80,20 @@ const UpdateVehicle = () => {
     dispatch(updateVehicle({ id, vehicleData: updatedFormData }));
 
     if (status === "succeeded") {
-      toast.success("Vehicle updated successfully!");
+      Swal.fire({
+        title: "Success",
+        text: "Vehicle updated successfully!",
+        icon: "success",
+        timer: 1000,
+        showConfirmButton: false,
+      });
     } else if (status === "failed" && error) {
-      toast.error(`Error: ${error}`);
+      Swal.fire({
+        title: "Error!",
+        text: `Error updating booking: ${error.message}`,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 
