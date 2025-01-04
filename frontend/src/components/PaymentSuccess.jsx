@@ -23,7 +23,7 @@ const PaymentSuccess = () => {
         setLoading(true);
         hasCreatedBooking.current = true;
         try {
-          const response = await axios.get(
+          const response = await axios.post(
             `${baseURL}/api/booking/payment-success?session_id=${sessionId}`,
             config
           );
