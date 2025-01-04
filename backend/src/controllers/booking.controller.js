@@ -2,7 +2,7 @@ import Booking from "../models/booking.model.js";
 import Car from "../models/car.model.js";
 import User from "../models/user.model.js";
 import Stripe from "stripe";
-import {base}
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // GET AVAILABLE VEHICLES
