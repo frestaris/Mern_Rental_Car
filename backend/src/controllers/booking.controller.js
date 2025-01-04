@@ -2,7 +2,7 @@ import Booking from "../models/booking.model.js";
 import Car from "../models/car.model.js";
 import User from "../models/user.model.js";
 import Stripe from "stripe";
-
+import {base}
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // GET AVAILABLE VEHICLES
@@ -219,8 +219,8 @@ export const createSession = async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:5173/payment-cancel`,
+      success_url: `https://mern-car-rent.netlify.app/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `https://mern-car-rent.netlify.app/payment-cancel`,
       metadata: {
         userId: bookingData.userId,
         carId: bookingData.carId._id,
