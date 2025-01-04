@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addVehicle } from "../../redux/slices/vehicleSlice";
 import Swal from "sweetalert2";
+import axios from "axios";
+import Spinner from "../../components/Spinner";
 
 const AddVehicle = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +18,9 @@ const AddVehicle = () => {
 
   const [isFuelConsumptionDisabled, setIsFuelConsumptionDisabled] =
     useState(false);
+
+  const [isUsingUrl, setIsUsingUrl] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
 
   const dispatch = useDispatch();
   const { status, error } = useSelector((state) => state.vehicles);
@@ -44,6 +49,42 @@ const AddVehicle = () => {
         ...prevData,
         [name]: value,
       }));
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      Swal.fire(
+        "Error!",
+        "File size exceeds 2MB. Please select a smaller file.",
+        "error"
+      );
+      return;
+    }
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "oifdoxrm");
+
+    try {
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/dxbalmukb/image/upload",
+        formData
+      );
+      const imageUrl = response.data.secure_url;
+      setFormData((prevData) => ({ ...prevData, image: imageUrl }));
+      setIsUploading(false);
+      setFormData({});
+      document.getElementById("fileInput").value = "";
+      Swal.fire("Success!", "Image uploaded successfully!", "success");
+    } catch (error) {
+      setIsUploading(false);
+      console.error(error);
+      Swal.fire("Error!", "Image upload failed. Try again.", "error");
     }
   };
 
@@ -204,19 +245,57 @@ const AddVehicle = () => {
           />
         </div>
         <div>
-          <label className="block font-medium mb-1" htmlFor="image">
-            Image URL
-          </label>
-          <input
-            type="url"
-            id="image"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            className="focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white w-full border border-gray-300 rounded-lg px-3 py-2"
-            required
-          />
+          <div className="mb-4">
+            <label htmlFor="imageOption" className="block font-medium mb-1">
+              Image Upload Option
+            </label>
+            <select
+              id="imageOption"
+              value={isUsingUrl ? "url" : "cloudinary"}
+              onChange={(e) => setIsUsingUrl(e.target.value === "url")}
+              className="focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white w-full border border-gray-300 rounded-lg px-3 py-2"
+            >
+              <option value="url">Use URL</option>
+              <option value="cloudinary">Upload from you PC</option>
+            </select>
+          </div>
         </div>
+
+        {isUsingUrl ? (
+          <div>
+            <label className="block font-medium mb-1" htmlFor="image">
+              Image URL
+            </label>
+            <input
+              type="url"
+              id="image"
+              name="image"
+              value={formData.image}
+              onChange={handleChange}
+              className="focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white w-full border border-gray-300 rounded-lg px-3 py-2"
+              required
+            />
+          </div>
+        ) : (
+          <div>
+            <label className="block font-medium mb-1" htmlFor="file">
+              Upload Image
+            </label>
+            <input
+              type="file"
+              id="file"
+              onChange={handleFileUpload}
+              className="focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white w-full border border-gray-300 rounded-lg px-3 py-2"
+            />
+            {isUploading && (
+              <div className="flex items-center gap-2 my-4">
+                <p className="text-md text-gray-500 ml-5">Uploading...</p>
+                <Spinner size={20} />
+              </div>
+            )}
+          </div>
+        )}
+
         <button
           type="submit"
           className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 mt-3"

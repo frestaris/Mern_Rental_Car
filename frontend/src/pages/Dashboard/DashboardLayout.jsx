@@ -46,6 +46,7 @@ const DashboardLayout = () => {
                     ? "text-gray-800 after:content-[''] after:absolute after:left-0 after:bottom-[-3px] after:w-full after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300"
                     : "after:content-[''] after:absolute after:left-1/2 after:bottom-[-3px] after:w-0 after:h-[3px] after:bg-amber-600 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0"
                 }`}
+                onClick={() => setIsSidebarOpen(false)}
               >
                 {link.label}
               </Link>

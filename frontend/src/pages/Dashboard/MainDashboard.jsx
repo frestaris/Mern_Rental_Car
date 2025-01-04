@@ -86,7 +86,6 @@ const MainDashboard = () => {
     cumulativeRevenue += dataPoint.revenue;
     return { ...dataPoint, cumulativeRevenue };
   });
-
   return (
     <div>
       {/* Total section with responsive styling */}
@@ -95,7 +94,7 @@ const MainDashboard = () => {
         <div className="bg-white flex-1 text-center rounded-lg border p-5 shadow-md mb-4 sm:w-full md:w-auto h-28">
           <h2 className="text-xl font-semibold text-black">Total Revenue:</h2>
           <span className="block text-md font-bold text-gray-600 mt-2">
-            ${totalRevenue.toFixed(2)}
+            ${new Intl.NumberFormat().format(totalRevenue)}.00
           </span>
         </div>
 
