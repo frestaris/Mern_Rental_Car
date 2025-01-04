@@ -2,7 +2,6 @@ import Booking from "../models/booking.model.js";
 import Car from "../models/car.model.js";
 import User from "../models/user.model.js";
 import Stripe from "stripe";
-import moment from "moment";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -26,17 +25,24 @@ export const getAvailableVehicles = async (req, res) => {
     // Fetch all cars
     const allCars = await Car.find();
 
+    for (const car of allCars) {
+      const currentDate = new Date();
+      const booking = await Booking.findOne({ car: car._id });
+
+      if (booking && new Date(booking.endDate) < currentDate) {
+        car.status = "available";
+        await car.save();
+      }
+    }
+
     // Check car availability for the date range
     const availableCarIds = [];
     for (const car of allCars) {
       const existingBooking = await Booking.findOne({
         car: car._id,
-        $or: [
-          { startDate: { $lt: end }, endDate: { $gt: start } }, // Check if there is an overlap with the selected dates
-        ],
+        $or: [{ startDate: { $lt: end }, endDate: { $gt: start } }],
       });
 
-      // If no existing booking is found, the car is available
       if (!existingBooking) {
         availableCarIds.push(car._id);
       }

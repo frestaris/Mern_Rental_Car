@@ -1,5 +1,6 @@
 import express from "express";
 import Car from "../models/car.model.js";
+import Booking from "../models/booking.model.js";
 
 const router = express.Router();
 
@@ -53,6 +54,16 @@ export const addCar = async (req, res) => {
 export const getCars = async (req, res) => {
   try {
     const cars = await Car.find();
+
+    for (const car of cars) {
+      const currentDate = new Date();
+      const booking = await Booking.findOne({ car: car._id });
+
+      if (booking && new Date(booking.endDate) < currentDate) {
+        car.status = "available";
+        await car.save();
+      }
+    }
 
     res.status(200).json(cars);
   } catch (error) {
