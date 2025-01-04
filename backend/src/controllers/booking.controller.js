@@ -220,8 +220,8 @@ export const createSession = async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `https://mern-car-rent.netlify.app/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `https://mern-car-rent.netlify.app/payment-cancel`,
+      success_url: `https://mern-rental-car-frontend.vercel.app/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `https://mern-rental-car-frontend.vercel.app/payment-cancel`,
       metadata: {
         userId: bookingData.userId,
         carId: bookingData.carId._id,
