@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@gmail.com");
+  const [password, setPassword] = useState("123456");
   const dispatch = useDispatch();
   const { error, currentUser } = useSelector((state) => state.auth);
   const navigate = useNavigate();
@@ -38,7 +38,8 @@ const SignIn = () => {
         >
           <div>
             <label className="block text-sm/6 font-medium text-gray-900">
-              Email address
+              Email address -{" "}
+              <span className="text-gray-600">admin or test@gmail.com</span>
             </label>
             <div className="mt-2">
               <input
@@ -56,7 +57,7 @@ const SignIn = () => {
           <div>
             <div className="flex items-center justify-between">
               <label className="block text-sm/6 font-medium text-gray-900">
-                Password
+                Password - <span className="text-gray-600">123456</span>
               </label>
             </div>
             <div className="mt-2">
