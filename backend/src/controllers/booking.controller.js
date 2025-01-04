@@ -22,32 +22,23 @@ export const getAvailableVehicles = async (req, res) => {
         .json({ message: "Drop-off date must be after the pickup date." });
     }
 
-    const allCars = await Car.find();
+    // Query for available cars and their bookings at once
+    const allCars = await Car.find({
+      status: { $ne: "not available" }, // Only consider available cars
+    });
 
-    for (const car of allCars) {
-      const currentDate = new Date();
-      const booking = await Booking.findOne({ car: car._id });
+    // Fetch bookings that overlap with the requested dates
+    const conflictingBookings = await Booking.find({
+      $or: [{ startDate: { $lt: end }, endDate: { $gt: start } }],
+    });
 
-      if (booking && new Date(booking.endDate) < currentDate) {
-        car.status = "available";
-        await car.save();
-      }
-    }
-
-    const availableCarIds = [];
-    for (const car of allCars) {
-      if (car.status !== "not available") {
-        const existingBooking = await Booking.findOne({
-          car: car._id,
-          $or: [{ startDate: { $lt: end }, endDate: { $gt: start } }],
-        });
-
-        if (!existingBooking) {
-          availableCarIds.push(car._id);
-        }
-      }
-    }
-    const availableCars = await Car.find({ _id: { $in: availableCarIds } });
+    // Filter cars that are not conflicting with any booking
+    const availableCars = allCars.filter((car) => {
+      // Check if there's a conflicting booking for this car
+      return !conflictingBookings.some(
+        (booking) => booking.car.toString() === car._id.toString()
+      );
+    });
 
     if (availableCars.length === 0) {
       return res
