@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  🔗 <strong>  <a href="https://mern-rental-car-frontend.vercel.app/">Live Demo</a></strong>
+  🔗 <strong><a href="https://mern-rental-car-frontend.vercel.app/">Live Demo</a></strong>
 </p>
 
 <hr />
@@ -21,14 +21,15 @@
   <li><strong>Admin Dashboard:</strong> Manage car inventory, bookings, and user information.</li>
   <li><strong>Stripe Integration:</strong> Make secure online payments.</li>
   <li><strong>Responsive Design:</strong> Optimized for mobile and desktop devices.</li>
+  <li><strong>Global State Management:</strong> Redux is used for consistent and scalable state handling.</li>
 </ul>
 
 <h2>Tech Stack</h2>
 <ul>
-  <li><strong>Frontend:</strong> React.js, CSS</li>
+  <li><strong>Frontend:</strong> React.js, Redux, Tailwind CSS</li>
   <li><strong>Backend:</strong> Node.js, Express.js</li>
   <li><strong>Database:</strong> MongoDB</li>
-  <li><strong>Deployment:</strong> Vercel</li>
+  <li><strong>Deployment:</strong> Vercel (frontend) & Render/Heroku (backend)</li>
 </ul>
 
 <h2>Getting Started</h2>
@@ -122,8 +123,10 @@ About, Contact, FAQ, Support pages to assist users.
 
 ### Mobile Friendly
 
-Responsive an all devices.
+Responsive on all devices.
 
 ![Review Booking Mobile](https://github.com/frestaris/Mern_Rental_Car/raw/master/frontend/src/assets/screenshots/Review-Booking-Mobile.png)
 
 ![FAQ](https://github.com/frestaris/Mern_Rental_Car/raw/master/frontend/src/assets/screenshots/FAQ.png)
+
+Feel free to fork the repo, contribute, and give it a ⭐ if you like it!
